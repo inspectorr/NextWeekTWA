@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  client:
+    container_name: client
+    build:
+      context: client
+      target: dev
+    volumes:
+      - ./client/src:/opt/src
+      - ./client/public:/opt/public
+    ports:
+      - '3000:3000'
+  ngrok:
+    container_name: ngrok
+    image: ngrok/ngrok:latest
+    command: http http://localhost:3000
+    restart: unless-stopped
+    network_mode: host
+    env_file:
+      - .env
+    depends_on:
+      client:
+        condition: service_started
