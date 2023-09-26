@@ -1,4 +1,4 @@
-FROM python:3.9-alpine
+FROM python:3.9-alpine as python-builder
 
 WORKDIR /opt
 
@@ -11,4 +11,6 @@ RUN pip install --no-cache -r requirements.txt
 
 COPY . .
 
-CMD ["python", "main.py"]
+RUN ["chmod", "+x", "./entrypoint.sh"]
+
+ENTRYPOINT ["./entrypoint.sh"]
