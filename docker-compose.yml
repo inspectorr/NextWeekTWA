@@ -1,12 +1,15 @@
 version: '3.8'
 
-x-python-setup: &python-setup
+x-env: &env
+  env_file:
+    - .env
+
+x-python: &python
+  <<: *env
   build:
     context: server
   volumes:
     - ./server:/opt/server
-  env_file:
-    - .env
 
 services:
   client:
@@ -20,42 +23,41 @@ services:
     ports:
       - '3000:3000'
   cache:
+    <<: *env
     container_name: cache
     image: redis:7.2.1-alpine
     restart: always
     ports:
       - '6379:6379'
   database:
+    <<: *env
     container_name: database
     image: postgres:16-alpine
     restart: always
-    env_file:
-      - .env
     volumes:
       - db_data:/var/lib/postgresql/data/
     ports:
       - '5433:5432'
   tunnel:
+    <<: *env
     container_name: tunnel
     build: .dev/tunnel
     restart: unless-stopped
     network_mode: host
-    env_file:
-      - .env
     depends_on:
       - cache
       - client
-    ports:
-      - '8000:8000'
   server:
-    <<: *python-setup
+    <<: *python
     container_name: server
     command: runserver
     depends_on:
       - database
       - cache
+    ports:
+      - '8000:8000'
   bot:
-    <<: *python-setup
+    <<: *python
     container_name: bot
     command: runbot
     depends_on:
