@@ -2,7 +2,7 @@ const redis = require('redis');
 const localtunnel = require('localtunnel');
 
 const redisClient = redis.createClient({
-    url: `redis://127.0.0.1:${process.env.REDIS_PORT}`
+    url: `redis://127.0.0.1:${process.env.REDIS_PORT ?? 6379}`
 });
 
 const port = 3000;
