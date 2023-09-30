@@ -1,6 +1,6 @@
 from telegram.ext import CommandHandler, MessageHandler, Application, filters
 
-from server.bot.example import start, web_app_data
+from .handlers import start, web_app_data
 
 
 def setup_handlers(app: Application):

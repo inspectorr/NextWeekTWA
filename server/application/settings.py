@@ -15,7 +15,6 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
@@ -27,6 +26,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+if DEBUG:
+    ALLOWED_HOSTS.append('*')
+
 
 # Application definition
 
@@ -37,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'bot'
+    'webpack_loader',
+    'bot.apps.BotConfig',
 ]
 
 MIDDLEWARE = [
@@ -46,6 +49,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'bot.middleware.TelegramWebAppAuthMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -55,7 +59,9 @@ ROOT_URLCONF = 'application.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            BASE_DIR / 'templates',
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -83,6 +89,17 @@ DATABASES = {
         'HOST': os.getenv('POSTGRES_HOST'),
         'PORT': os.getenv('POSTGRES_PORT')
     },
+}
+
+REACT_STATIC_PATH = BASE_DIR / 'static/build'
+REACT_STATS_PATH = REACT_STATIC_PATH / 'webpack-stats.json'
+
+WEBPACK_LOADER = {
+  'DEFAULT': {
+     'CACHE': not DEBUG,
+     'BUNDLE_DIR_NAME': BASE_DIR / 'static/build',
+     'STATS_FILE': REACT_STATS_PATH,
+  },
 }
 
 
@@ -121,5 +138,5 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
-
+# todo prod
 STATIC_URL = '/static/'

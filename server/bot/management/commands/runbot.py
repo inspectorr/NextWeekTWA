@@ -1,6 +1,9 @@
+import sys
+
 from django.core.management import BaseCommand
 
-from server.bot.app import run
+print(sys.path)
+from server.bot.polling import run
 
 
 class Command(BaseCommand):
