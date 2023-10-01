@@ -4,7 +4,7 @@ import os
 from telegram import Update
 from telegram.ext import Application
 
-from .setup_handlers import setup_handlers
+from bot.setup_handlers import setup_handlers
 
 
 logging.basicConfig(

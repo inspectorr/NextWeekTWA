@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-from server.application.spa import spa_view
+from application.spa import spa_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),

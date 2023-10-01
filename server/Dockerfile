@@ -1,6 +1,6 @@
 FROM python:3.9-alpine as python-builder
 
-WORKDIR /opt
+WORKDIR /app
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1

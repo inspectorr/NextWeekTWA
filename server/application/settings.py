@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 import os
 from pathlib import Path
 
-from server.host import get_host
+from application.host import get_host
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -91,14 +91,14 @@ DATABASES = {
     },
 }
 
-REACT_STATIC_PATH = BASE_DIR / 'static/build'
-REACT_STATS_PATH = REACT_STATIC_PATH / 'webpack-stats.json'
+# REACT_STATIC_PATH = BASE_DIR / 'static/build'
+# REACT_STATS_PATH = REACT_STATIC_PATH / 'webpack-stats.json'
 
 WEBPACK_LOADER = {
   'DEFAULT': {
      'CACHE': not DEBUG,
-     'BUNDLE_DIR_NAME': BASE_DIR / 'static/build',
-     'STATS_FILE': REACT_STATS_PATH,
+     # 'BUNDLE_DIR_NAME': REACT_STATIC_PATH,
+     'STATS_FILE': BASE_DIR / 'webpack-stats.json',
   },
 }
 

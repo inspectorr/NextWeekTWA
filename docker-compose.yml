@@ -41,8 +41,8 @@ services:
     container_name: server
     command: runserver
     volumes:
-      - ./server:/opt/server
-      - ./client/build:/opt/static/build
+      - ./server:/app
+      - ./client/build/webpack-stats.json:/app/webpack-stats.json
     ports:
       - '8000:8000'
 
@@ -52,8 +52,7 @@ services:
     command: runbot
     restart: always
     volumes:
-      # todo find out ? imports
-      - ./server:/opt/server
+      - ./server:/app
 
   nginx:
     container_name: nginx
