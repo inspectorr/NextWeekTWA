@@ -4,16 +4,12 @@ import os
 from urllib.parse import unquote
 
 from django.http import HttpRequest, HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 
 
-def telegram_exempt(view_func):
-    view_func.telegram_exempt = True
-    return view_func
-
-
-def telegram_required(view_func):
-    view_func.telegram_required = True
-    return view_func
+def telegram_auth(view_func):
+    view_func.telegram_auth = True
+    return csrf_exempt(view_func)
 
 
 class TelegramWebAppAuthMiddleware:
@@ -24,11 +20,8 @@ class TelegramWebAppAuthMiddleware:
         return self.get_response(request)
 
     def process_view(self, request: HttpRequest, view_func, view_args, view_kwargs):
-        is_exempt = getattr(view_func, 'telegram_exempt', False)
-        is_required = getattr(view_func, 'telegram_required', False)
-
-        should_validate = is_required or not is_exempt
-        if not should_validate:
+        is_telegram_auth = getattr(view_func, 'telegram_auth', False)
+        if not is_telegram_auth:
             return None
 
         token = request.headers.get('X-Telegram-Auth-Token')
