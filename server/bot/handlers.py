@@ -3,7 +3,7 @@ import json
 from telegram import KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove, Update, WebAppInfo, MenuButtonWebApp
 from telegram.ext import ContextTypes
 
-from server.host import get_host
+from server.host import get_url
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -13,15 +13,15 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.effective_chat.set_menu_button(
         MenuButtonWebApp(
             text='Mini App',
-            web_app=WebAppInfo(url=get_host())
+            web_app=WebAppInfo(url=get_url())
         )
     )
     await update.message.reply_text(
-        'Welcome to the bot',
+        'Welcome to the bot!',
         reply_markup=ReplyKeyboardMarkup.from_button(
             KeyboardButton(
                 text='Open Mini App',
-                web_app=WebAppInfo(url=get_host())
+                web_app=WebAppInfo(url=get_url())
             )
         )
     )

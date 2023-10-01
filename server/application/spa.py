@@ -1,5 +1,8 @@
-from django.views.generic import TemplateView
+from django.shortcuts import render
+
+from server.bot.middleware import telegram_exempt
 
 
-class SPAView(TemplateView):
-    template_name = 'spa.html'
+@telegram_exempt
+def spa_view(request):
+    return render(request, 'spa.html')
