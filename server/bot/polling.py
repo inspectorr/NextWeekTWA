@@ -4,7 +4,7 @@ import os
 from telegram import Update
 from telegram.ext import Application
 
-from server.bot.setup_handlers import setup_handlers
+from bot.setup_handlers import setup_handlers
 
 
 logging.basicConfig(
@@ -23,5 +23,5 @@ setup_handlers(app)
 def run():
     app.run_polling(
         allowed_updates=Update.ALL_TYPES,
-        connect_timeout=10
+        connect_timeout=30
     )

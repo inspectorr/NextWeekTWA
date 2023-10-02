@@ -1,6 +1,6 @@
 from django.core.management import BaseCommand
 
-from server.bot.app import run
+from bot.polling import run
 
 
 class Command(BaseCommand):

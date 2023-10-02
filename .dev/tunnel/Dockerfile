@@ -1,6 +1,6 @@
-FROM node:18-alpine as tunnel-builder
+FROM node:20-alpine as tunnel-builder
 
-WORKDIR /opt
+WORKDIR /app
 
 COPY package*.json .
 RUN npm install

@@ -1,16 +1,19 @@
-const redis = require('redis');
 const localtunnel = require('localtunnel');
+const { createHash } = require('crypto');
 
-const redisClient = redis.createClient({
-    url: `redis://127.0.0.1:${process.env.REDIS_PORT ?? 6379}`
-});
+const PORT = 8765;
 
-const port = 3000;
-let tunnel = null;
+function getSubdomain() {
+    const hash = createHash('sha256').update(
+        process.env.TELEGRAM_BOT_TOKEN + process.env.DEV_TUNNEL_SALT
+    ).digest('hex');
+    return hash.slice(0, 10);
+}
 
 (async () => {
-  await redisClient.connect();
-  tunnel = await localtunnel({ port });
-  await redisClient.set('TUNNEL_URL', tunnel.url);
-  console.info(`${tunnel.url} tunnel started on port ${port}`);
+    const tunnel = await localtunnel({
+        port: PORT,
+        subdomain: getSubdomain(),
+    });
+    console.info(`${tunnel.url} tunnel started on port ${PORT}`);
 })();

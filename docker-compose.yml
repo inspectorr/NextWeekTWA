@@ -8,27 +8,11 @@ x-python: &python
   <<: *env
   build:
     context: server
-  volumes:
-    - ./server:/opt/server
+  depends_on:
+    - client
+    - database
 
 services:
-  client:
-    container_name: client
-    build:
-      context: client
-      target: dev
-    volumes:
-      - ./client/src:/opt/src
-      - ./client/public:/opt/public
-    ports:
-      - '3000:3000'
-  cache:
-    <<: *env
-    container_name: cache
-    image: redis:7.2.1-alpine
-    restart: always
-    ports:
-      - '6379:6379'
   database:
     <<: *env
     container_name: database
@@ -38,31 +22,60 @@ services:
       - db_data:/var/lib/postgresql/data/
     ports:
       - '5433:5432'
+
+  client:
+    container_name: client
+    build:
+      context: client
+      target: dev
+    volumes:
+      - ./client/build:/app/build
+      - ./client/src:/app/src
+      - ./client/package.json:/app/package.json
+      - ./client/package-lock.json:/app/package-lock.json
+    ports:
+      - '3000:3000'
+
+  server:
+    <<: *python
+    container_name: server
+    command: runserver
+    volumes:
+      - ./server:/app
+      - ./client/build/webpack-stats.json:/app/webpack-stats.json
+    ports:
+      - '8000:8000'
+
+  bot:
+    <<: *python
+    container_name: bot
+    command: runbot
+    restart: always
+    volumes:
+      - ./server:/app
+
+  nginx:
+    container_name: nginx
+    image: nginx:1.25.2
+    restart: always
+    ports:
+      - '8765:80'
+    volumes:
+      - .dev/nginx/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - server
+
   tunnel:
     <<: *env
     container_name: tunnel
     build: .dev/tunnel
     restart: always
     network_mode: host
+    volumes:
+      - .dev/tunnel/index.js:/app/index.js
     depends_on:
-      - cache
-      - client
-  server:
-    <<: *python
-    container_name: server
-    command: runserver
-    depends_on:
-      - database
-      - cache
-    ports:
-      - '8000:8000'
-  bot:
-    <<: *python
-    container_name: bot
-    command: runbot
-    depends_on:
-      - server
-      - tunnel
+      - nginx
+
 
 volumes:
   db_data:
