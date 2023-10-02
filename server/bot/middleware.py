@@ -1,10 +1,13 @@
 import hashlib
 import hmac
+import json
 import os
 from urllib.parse import unquote
 
 from django.http import HttpRequest, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+
+from bot.models import TelegramUser
 
 
 def telegram_auth(view_func):
@@ -25,25 +28,32 @@ class TelegramWebAppAuthMiddleware:
             return None
 
         token = request.headers.get('X-Telegram-Auth-Token')
-
-        if not token or not self.validate(token):
+        validated, user_dict = self.validate(token)
+        if not validated:
             return HttpResponse(status=403)
+
+        request.telegram_user, _ = TelegramUser.login(user_dict)
 
         return None
 
     @classmethod
-    def validate(cls, token: str):
+    def validate(cls, token: str) -> (bool, dict):
         parsed_token = {key: value for key, value in (param.split('=') for param in unquote(token).split('&'))}
         control_hash = parsed_token.pop('hash')
         data_check_string = '\n'.join([f'{key}={parsed_token[key]}' for key in sorted(parsed_token.keys())])
-        secret_key = hmac.new(  # todo cache
+        check_hash = hmac.new(
+            key=cls._get_secret_key(),
+            msg=data_check_string.encode(),
+            digestmod=hashlib.sha256
+        ).hexdigest()
+        validated = hmac.compare_digest(control_hash, check_hash)
+        user_dict = json.loads(parsed_token.get('user')) if validated else None
+        return validated, user_dict
+
+    @staticmethod
+    def _get_secret_key() -> bytes:
+        return hmac.new(
             key='WebAppData'.encode(),
             msg=os.getenv('TELEGRAM_BOT_TOKEN').encode(),
             digestmod=hashlib.sha256
         ).digest()
-        check_hash = hmac.new(
-            key=secret_key,
-            msg=data_check_string.encode(),
-            digestmod=hashlib.sha256
-        ).hexdigest()
-        return hmac.compare_digest(control_hash, check_hash)

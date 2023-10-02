@@ -1,15 +1,12 @@
-import json
-
-from telegram import KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove, Update, WebAppInfo, MenuButtonWebApp
+from telegram import Update, WebAppInfo, MenuButtonWebApp
 from telegram.ext import ContextTypes
 
 from application.host import get_url
+from bot.models import TelegramUser
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    print(update.effective_user.username)
-    print(update.effective_user.id)
-    print(update.effective_user.first_name)
+    await TelegramUser.alogin(update.effective_user.to_dict())
     await update.effective_chat.set_menu_button(
         MenuButtonWebApp(
             text='Mini App',
