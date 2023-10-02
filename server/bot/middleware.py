@@ -38,6 +38,8 @@ class TelegramWebAppAuthMiddleware:
 
     @classmethod
     def validate(cls, token: str) -> (bool, dict):
+        if not token:
+            return False, None
         parsed_token = {key: value for key, value in (param.split('=') for param in unquote(token).split('&'))}
         control_hash = parsed_token.pop('hash')
         data_check_string = '\n'.join([f'{key}={parsed_token[key]}' for key in sorted(parsed_token.keys())])
