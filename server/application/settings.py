@@ -63,9 +63,7 @@ ROOT_URLCONF = 'application.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-            BASE_DIR / 'templates',
-        ],
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -93,13 +91,6 @@ DATABASES = {
         'HOST': os.getenv('POSTGRES_HOST'),
         'PORT': os.getenv('POSTGRES_PORT')
     },
-}
-
-WEBPACK_LOADER = {
-  'DEFAULT': {
-     'CACHE': not DEBUG,
-     'STATS_FILE': BASE_DIR / 'webpack-stats.json',
-  },
 }
 
 
@@ -138,5 +129,4 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
-# todo prod
 STATIC_URL = '/static/'

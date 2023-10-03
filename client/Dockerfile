@@ -1,4 +1,4 @@
-FROM node:20-alpine as client-builder
+FROM node:20-slim as client-builder
 
 WORKDIR /app
 
@@ -7,8 +7,9 @@ RUN npm install
 
 COPY public public
 COPY src src
-COPY config-overrides.js config-overrides.js
 
 FROM client-builder as dev
+
+ENV WDS_SOCKET_PORT=443
 
 CMD ["npm", "start"]

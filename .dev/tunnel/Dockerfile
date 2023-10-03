@@ -1,4 +1,4 @@
-FROM node:20-alpine as tunnel-builder
+FROM node:20-slim as tunnel-builder
 
 WORKDIR /app
 
