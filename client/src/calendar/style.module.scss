@@ -1,0 +1,51 @@
+.view {
+  display: none;
+}
+
+.viewCurrent {
+  display: flex;
+  height: 100vh;
+}
+
+.table {
+  width: 100%;
+
+  .tableBody {
+    height: calc(100vh - 4rem);
+    overflow: scroll;
+  }
+}
+
+.cell {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.cell + .cell {
+  border-left: 1px solid black;
+}
+
+.cellHeader {
+}
+
+.cellStarter {
+
+}
+
+.row {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: 4rem repeat(7, 1fr);
+  height: 8.33%;
+}
+
+.row + .row {
+  border-top: 1px solid black;
+}
+
+.rowHeader {
+  height: 4rem;
+}

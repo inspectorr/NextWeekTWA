@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { useRequest } from './helpers/hooks';
-import { Calendar } from './calendar/Calendar';
-import { TWA } from './telegram';
+import { Calendar } from './calendar';
 import { apiUrls } from './urls';
+import './app.css';
 
 function App() {
     const [response, isLoading, authenticate] = useRequest({

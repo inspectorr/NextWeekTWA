@@ -1,3 +1,3 @@
 export const apiUrls = {
-    auth: '/bot/auth/',
+    auth: '/api/bot/auth/',
 };
