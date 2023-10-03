@@ -4,23 +4,22 @@
   "private": true,
   "dependencies": {
     "axios": "^1.5.1",
+    "dayjs": "^1.11.10",
     "react": "^18.2.0",
     "react-calendar": "^4.6.0",
     "react-dom": "^18.2.0",
-    "react-scripts": "5.0.1"
+    "react-scripts": "5.0.1",
+    "sass": "^1.68.0"
   },
   "devDependencies": {
     "@twa-dev/types": "^6.9.0",
-    "customize-cra": "^1.0.0",
-    "react-app-rewired": "^2.2.1",
-    "webpack-bundle-tracker": "^0.4.3",
-    "write-file-webpack-plugin": "^4.5.1"
+    "classnames": "^2.3.2"
   },
   "scripts": {
-    "start": "react-app-rewired start",
-    "build": "react-app-rewired build",
-    "test": "react-app-rewired test",
-    "eject": "react-app-rewired eject"
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": [

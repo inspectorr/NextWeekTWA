@@ -29,7 +29,6 @@ services:
       context: client
       target: dev
     volumes:
-      - ./client/build:/app/build
       - ./client/src:/app/src
       - ./client/package.json:/app/package.json
       - ./client/package-lock.json:/app/package-lock.json
@@ -42,7 +41,6 @@ services:
     command: runserver
     volumes:
       - ./server:/app
-      - ./client/build/webpack-stats.json:/app/webpack-stats.json
     ports:
       - '8000:8000'
 
