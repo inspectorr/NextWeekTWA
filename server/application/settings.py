@@ -24,7 +24,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+PRODUCTION = bool(int(os.getenv('PRODUCTION', 0)))
+DEBUG = not PRODUCTION
 
 ALLOWED_HOSTS = [
     get_host()
@@ -43,8 +44,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'webpack_loader',
+    'rest_framework',
     'bot.apps.BotConfig',
+    'events.apps.EventsConfig',
 ]
 
 MIDDLEWARE = [

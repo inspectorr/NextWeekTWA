@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
-import request from './request';
+import { axiosRequest } from './request';
 
-export function useRequest(params) {
+export function useRequest(axiosReqObj) {
     const [result, setResult] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
 
-    function makeRequest(data = {}) {
-        const payload = { ...params, ...data };
+    function makeRequest(axiosLocalReqObj = {}) {
+        const payload = { ...axiosReqObj, ...axiosLocalReqObj };
         setIsLoading(true);
-        request(payload)
+        axiosRequest(payload)
             .then((result) => {
                 setResult(result.data);
             })

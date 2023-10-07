@@ -13,6 +13,7 @@ class TelegramUser(TimeStampModel):
     language_code = models.CharField(default='en')
     is_bot = models.BooleanField(default=False)
     is_premium = models.BooleanField(default=False)
+    # is_blocked = models.BooleanField(default=False)
     last_login_at = models.DateTimeField(null=True)
 
     def __str__(self):

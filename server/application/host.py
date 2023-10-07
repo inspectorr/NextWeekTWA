@@ -1,16 +1,21 @@
 import hashlib
 import os
 
+from application import settings
+
 
 def _get_dev_tunnel_host():
-    str_to_encode = os.getenv('TELEGRAM_BOT_TOKEN') + os.getenv('DEV_TUNNEL_SALT')
-    hash_ = hashlib.sha256(str_to_encode.encode('utf-8')).hexdigest()
-    domain = hash_[:10]
-    return f'{domain}{os.getenv("DEV_TUNNEL_HOST_POSTFIX")}'
+    subdomain = os.getenv('DEV_TUNNEL_SUBDOMAIN')
+    if not subdomain:
+        # let's generate it from hash of bot token and provided salt
+        str_to_encode = os.getenv('TELEGRAM_BOT_TOKEN', '') + os.getenv('DEV_TUNNEL_SALT', '')
+        hash_ = hashlib.sha256(str_to_encode.encode('utf-8')).hexdigest()
+        subdomain = hash_[:10]
+    return f'{subdomain}{os.getenv("DEV_TUNNEL_POSTFIX")}'
 
 
 def get_host():
-    return _get_dev_tunnel_host() if True else os.getenv('PRODUCTION_HOST')
+    return os.getenv('PRODUCTION_HOST') if settings.PRODUCTION else _get_dev_tunnel_host()
 
 
 def get_url():
