@@ -3,11 +3,12 @@ import cn from 'classnames';
 import { format, startOfWeek, addDays, getDate } from 'date-fns';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { NavigationButton } from 'common/NavigationButton';
+import Page from 'pages/Page';
+import { combineDateTime } from 'helpers/date';
 import { appUrls } from 'urls';
-import styles from 'pages/week/style.module.scss';
 import { TWA } from 'telegram/api';
-import { combineDateTime } from '../../helpers/date';
+import { TWABackButton } from 'telegram/BackButton';
+import styles from 'pages/week/style.module.scss';
 
 
 export function WeekPage() {
@@ -58,21 +59,23 @@ export function WeekPage() {
     }
 
     return (
-        <div className={ styles.table }>
-            <div className={ cn(styles.row, styles.rowHeader) }>
-                <div className={ cn(styles.cell, styles.cellHeader) }>
-                    <NavigationButton
-                        title="Back"
-                        to={ appUrls.calendar }
-                    />
+        <Page>
+            <div className={ styles.table }>
+                <div className={ cn(styles.row, styles.rowHeader) }>
+                    <div className={ cn(styles.cell, styles.cellHeader) }>
+                        *
+                    </div>
+                    { week }
                 </div>
-                { week }
+                <div
+                    className={ styles.tableBody }
+                >
+                    { hours }
+                </div>
             </div>
-            <div
-                className={ styles.tableBody }
-            >
-                { hours }
-            </div>
-        </div>
+            <TWABackButton
+                to={ appUrls.calendar }
+            />
+        </Page>
     );
 }

@@ -1,15 +1,15 @@
 import { useCallback, useEffect } from 'react';
 import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
+import { addHours, format } from 'date-fns';
 
 import Page from 'pages/Page';
 import { TWA } from 'telegram/api';
 import { TWAMainButton } from 'telegram/MainButton';
-import { NavigationButton } from 'common/NavigationButton';
+import { TWABackButton } from 'telegram/BackButton';
 import { useRequest } from 'helpers/hooks';
 import { combineDateTime } from 'helpers/date';
 import { appUrls, apiUrls } from 'urls';
-import { addHours, format } from 'date-fns';
 
 
 export function EventPage() {
@@ -48,10 +48,6 @@ export function EventPage() {
 
     return (
         <Page>
-            <NavigationButton
-                title="Back"
-                to={ appUrls.calendar }
-            />
             <div>
                 Creating event on { new Date(date).toLocaleDateString() }
             </div>
@@ -64,18 +60,21 @@ export function EventPage() {
                     <FormInput
                         name="start_date"
                         required
-                        inputProps={ { type: 'time' } }
+                        inputProps={ { type: 'time', step: 900 } }
                     />
                     <FormInput
                         name="end_date"
                         required
-                        inputProps={ { type: 'time' } }
+                        inputProps={ { type: 'time', step: 900 } }
                     />
                 </form>
             </FormProvider>
             <TWAMainButton
                 text="CREATE EVENT"
                 onClick={ formApi?.handleSubmit(onSubmit) }
+            />
+            <TWABackButton
+                to={ appUrls.week(date) }
             />
         </Page>
     );

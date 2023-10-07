@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useEffect } from 'react';
 import { TWA } from './api';
 
 export function TWAMainButton({
