@@ -31,6 +31,7 @@ services:
     volumes:
       - ./client/src:/app/src
       - ./client/package.json:/app/package.json
+      - ./client/jsconfig.json:/app/jsconfig.json
     ports:
       - '3000:3000'
 

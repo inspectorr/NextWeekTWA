@@ -1,21 +1,24 @@
 import ReactCalendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
 import { useNavigate } from 'react-router-dom';
-import { appUrls } from '../../urls';
-import Page from '../Page';
+import { format } from 'date-fns';
+
+import Page from 'pages/Page';
+import { appUrls } from 'urls';
 
 
 export function CalendarPage() {
     const navigate = useNavigate();
 
     function onClickDay(date) {
-        const formattedDate = date.toISOString().split('T')[0];
-        navigate(appUrls.week(formattedDate));
+        navigate(appUrls.week(format(date, 'yyyy-MM-dd')));
     }
 
     return (
         <Page>
             <ReactCalendar
                 onClickDay={ onClickDay }
+                calendarType="iso8601"
             />
         </Page>
     );

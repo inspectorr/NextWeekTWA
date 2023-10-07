@@ -1,51 +1,51 @@
-import dayjs from 'dayjs';
-import { useNavigate, useParams } from 'react-router-dom';
-import localeData from 'dayjs/plugin/localeData';
-import weekOfYear from 'dayjs/plugin/weekOfYear';
-// import isoWeek from 'dayjs/plugin/isoWeek';
+import { useEffect } from 'react';
 import cn from 'classnames';
+import { format, startOfWeek, addDays, getDate } from 'date-fns';
+import { useNavigate, useParams } from 'react-router-dom';
 
-import { apiUrls, appUrls } from '../../urls';
-import styles from '../style.module.scss';
-import { NavigationButton } from '../../common/NavigationButton';
+import { NavigationButton } from 'common/NavigationButton';
+import { appUrls } from 'urls';
+import styles from 'pages/week/style.module.scss';
+import { TWA } from 'telegram/api';
+import { combineDateTime } from '../../helpers/date';
 
-dayjs.extend(localeData);
-dayjs.extend(weekOfYear);
-// dayjs.extend(isoWeek);
-
-
-const weekdays = dayjs.weekdaysMin();
 
 export function WeekPage() {
     const { date } = useParams();
     const navigate = useNavigate();
 
-    function onHourClick(startTime) {
-        navigate(appUrls.event(date, startTime));
+    useEffect(() => {
+        TWA.expand();
+    }, []);
+
+    function onHourClick(selectedDate, selectedTime) {
+        navigate(appUrls.event(combineDateTime(selectedDate, selectedTime)));
     }
 
-    const weekStart = dayjs(date).startOf('week');
-    const week = weekdays?.map((weekDayName, i) => {
-        const weekDay = weekStart.add(i, 'day');
-        const date = weekDay.date();
+    const weekStart = startOfWeek(new Date(date), { weekStartsOn: 1 });
+    const weekDates = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
+    const week = weekDates?.map((weekDate) => {
+        const weekDayName = format(weekDate, 'EEEEE');
+        const dateOfMonth = getDate(weekDate);
         return (
             <div key={ weekDayName } className={ cn(styles.cell, styles.cellHeader) }>
                 <div>{ weekDayName }</div>
-                <div>{ date }</div>
+                <div>{ dateOfMonth }</div>
             </div>
         );
     });
 
     const hours = Array.from({ length: 24 }, (_, i) => {
         const time = i < 10 ? `0${i}` : `${i}`;
+        const formattedTime = `${time}:00`
         return (
             <div className={ styles.row }>
                 <div className={ styles.cell }>{ `${time}:00` }</div>
-                { weekdays?.map(() => {
+                { weekDates?.map((date) => {
                     return (
                         <div
                             className={ styles.cell }
-                            onClick={ () => onHourClick(time) }
+                            onClick={ () => onHourClick(format(date, 'yyyy-MM-dd'), formattedTime) }
                         />
                     );
                 }) }

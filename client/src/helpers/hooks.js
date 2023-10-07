@@ -1,41 +1,42 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { axiosRequest } from './request';
 
 export function useRequest(axiosReqObj) {
-    const [result, setResult] = useState(null);
-    const [isLoading, setIsLoading] = useState(false);
+    const [result, _setResult] = useState(null);
+    const [error, _setError] = useState(null);
+    const [isLoading, _setIsLoading] = useState(false);
+    const [isOk, _setIsOk] = useState(null);
 
-    function makeRequest(axiosLocalReqObj = {}) {
+    function request(axiosLocalReqObj = {}) {
         const payload = { ...axiosReqObj, ...axiosLocalReqObj };
-        setIsLoading(true);
+        _setIsLoading(true);
+        _setResult(null);
+        _setError(null);
+        _setIsOk(null);
         axiosRequest(payload)
             .then((result) => {
-                setResult(result.data);
+                if (result.status >= 200 && result.status < 300) {
+                    _setResult(result);
+                    _setIsOk(true);
+                } else {
+                    throw result;
+                }
             })
-            .catch(console.log) // todo error handling
+            .catch((error) => {
+                _setError(error);
+                _setIsOk(false);
+            })
             .finally(() => {
-                setIsLoading(false);
+                _setIsLoading(false);
             });
     }
 
-    return [result, isLoading, makeRequest, setResult]
-}
-
-export function useApi(url) {
-    const [result, isLoading, makeRequest, setResult] = useRequest({ method: 'get', url });
-
-    useEffect(() => {
-        makeRequest();
-    }, []);
-
-    function reload(manual_offline_data) {
-        if (manual_offline_data) {
-            setResult(manual_offline_data);
-            return;
-        }
-
-        return makeRequest();
+    return {
+        isOk,
+        result,
+        error,
+        isLoading,
+        request,
+        _setResult,
     }
-
-    return [result, isLoading, reload];
 }

@@ -1,19 +1,32 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
+
+import Page from 'pages/Page';
+import { TWA } from 'telegram/api';
 import { TWAMainButton } from 'telegram/MainButton';
 import { NavigationButton } from 'common/NavigationButton';
 import { useRequest } from 'helpers/hooks';
-import Page from 'pages/Page';
+import { combineDateTime } from 'helpers/date';
 import { appUrls, apiUrls } from 'urls';
-import { combineDateTime } from '../../helpers/date';
+import { addHours, format } from 'date-fns';
+
 
 export function EventPage() {
-    const [res, isLoading, createEvent] = useRequest({ method: 'POST' });
+    const {
+        request: createEvent,
+        isOk
+    } = useRequest({ method: 'POST' });
 
-    const { date } = useParams();
+    const { datetime } = useParams();
+    const date = format(new Date(datetime), 'yyyy-MM-dd');
 
-    const formApi = useForm();
+    const formApi = useForm({
+        defaultValues: {
+            start_date: format(new Date(datetime), 'HH:mm'),
+            end_date: format(addHours(new Date(datetime), 1), 'HH:mm'),
+        },
+    });
 
     const onSubmit = useCallback((data) => {
         const payload = {
@@ -26,6 +39,12 @@ export function EventPage() {
             data: payload
         });
     }, []);
+
+    useEffect(() => {
+        if (isOk) {
+            TWA.close();
+        }
+    }, [isOk]);
 
     return (
         <Page>

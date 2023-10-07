@@ -6,5 +6,5 @@ export const apiUrls = {
 export const appUrls = {
     calendar: '/',
     week: (date) => `/week/${date}`,
-    event: (date, startTime) => `/event/${date}/${startTime}`,
+    event: (datetime) => `/event/${datetime}`,
 };
