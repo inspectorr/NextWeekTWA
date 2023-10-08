@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { axiosRequest } from './request';
 
 export function useRequest(axiosReqObj) {
@@ -40,4 +40,13 @@ export function useRequest(axiosReqObj) {
         request,
         _setResult,
     }
+}
+
+export function useStateWithRef(defaultState) {
+    const [state, setState] = useState(defaultState);
+    const ref = useRef(defaultState);
+    useEffect(() => {
+        ref.current = state;
+    }, [state]);
+    return [state, setState, ref];
 }

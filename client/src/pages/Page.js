@@ -1,6 +1,6 @@
 export default function Page({ children }) {
     return (
-        <div>
+        <div style={ { position: 'relative' } }>
             { children }
         </div>
     );

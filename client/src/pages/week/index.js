@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react';
-import cn from 'classnames';
-import { format, startOfWeek, endOfWeek, addDays, getDate, getHours, getMinutes } from 'date-fns';
+import { format, startOfWeek, endOfWeek, addDays, getDate, getHours, getMinutes, addHours } from 'date-fns';
 import { useNavigate, useParams } from 'react-router-dom';
+import cn from 'classnames';
 
 import Page from 'pages/Page';
 import { combineDateTime, leadingNullStr } from 'helpers/date';
@@ -9,6 +9,7 @@ import { appUrls } from 'urls';
 import { TWA } from 'telegram/api';
 import { TWABackButton } from 'telegram/BackButton';
 import { useRemoteEvents } from 'common/dataHooks';
+import { useStateWithRef } from 'helpers/hooks';
 import styles from 'pages/week/style.module.scss';
 
 
@@ -20,8 +21,23 @@ export function WeekPage() {
         TWA.expand();
     }, []);
 
-    function onHourClick(selectedDate, selectedTime) {
-        navigate(appUrls.event(secretKey, combineDateTime(selectedDate, selectedTime)));
+    const [selectedDatetime, setSelectedDatetime, selectedDatetimeRef] = useStateWithRef();
+
+    const [selectedIsoDate, selectedHour] = useMemo(() => {
+        if (!selectedDatetime) {
+            return [];
+        }
+        return [format(new Date(selectedDatetime), 'yyyy-MM-dd'), getHours(new Date(selectedDatetime))];
+    }, [selectedDatetime]);
+
+    useEffect(() => {
+        if (selectedDatetime) {
+            navigate(appUrls.event(secretKey, selectedDatetime));
+        }
+    }, [selectedDatetime]);
+
+    function onHourClick(date, time) {
+        setSelectedDatetime(combineDateTime(date, time));
     }
 
     const weekStart = useMemo(() => startOfWeek(new Date(date), { weekStartsOn: 1 }), [date]);
@@ -54,31 +70,34 @@ export function WeekPage() {
                         <div
                             key={ formattedDate + formattedTime }
                             className={ styles.cell }
-                            onClick={ () => onHourClick(formattedDate, formattedTime) }
+                            onMouseDown={ () => onHourClick(formattedDate, formattedTime) }
                         >
                             { hourEvents.map(event => {
-                                const startMinute = getMinutes(new Date(event.start_date));
-                                const endHour = getHours(new Date(event.end_date));
-                                const hourDiff = endHour - hour;
-                                const endMinute = getMinutes(new Date(event.end_date));
-                                const top = Math.floor(startMinute / 60 * 100);
-                                const height = hourDiff * 100 + Math.floor(+ endMinute / 60 * 100) - top;
                                 return (
-                                    <div
-                                        className={ styles.cellEvent }
-                                        style={ {
-                                            top: `${top}%`,
-                                            height: `${height}%`
-                                        } }
+                                    <HourEvent
+                                        hour={ hour }
+                                        startDate={ new Date(event.start_date) }
+                                        endDate={ new Date(event.end_date) }
                                     />
                                 );
                             }) }
+                            { selectedIsoDate === formattedDate && hour === selectedHour && (
+                                <HourEvent
+                                    hour={ hour }
+                                    startDate={ new Date(selectedDatetime) }
+                                    endDate={ addHours(new Date(selectedDatetime), 1) }
+                                />
+                            ) }
                         </div>
                     );
                 }) }
             </div>
         );
     });
+
+    function toEventBooking() {
+        navigate(appUrls.event(secretKey, selectedDatetimeRef.current));
+    }
 
     if (!date) {
         return null;
@@ -94,7 +113,7 @@ export function WeekPage() {
                     { week }
                 </div>
                 <div
-                    className={ styles.tableBody }
+                    className={ cn(styles.tableBody, selectedDatetime && styles.tableBodySelected) }
                 >
                     { hours }
                 </div>
@@ -103,5 +122,28 @@ export function WeekPage() {
                 to={ appUrls.calendar(secretKey) }
             />
         </Page>
+    );
+}
+
+
+function HourEvent({
+    hour,
+    startDate,
+    endDate
+}) {
+    const startMinute = getMinutes(startDate);
+    const endHour = getHours(endDate);
+    const endMinute = getMinutes(endDate);
+    const hourDiff = endHour - hour;
+    const top = Math.floor(startMinute / 60 * 100);
+    const height = hourDiff * 100 + Math.floor(+ endMinute / 60 * 100) - top;
+    return (
+        <div
+            className={ styles.cellEvent }
+            style={ {
+                top: `${top}%`,
+                height: `${height}%`
+            } }
+        />
     );
 }
