@@ -1,9 +1,9 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { format, startOfWeek, endOfWeek, addDays, getDate, getHours, getMinutes, addHours } from 'date-fns';
 import { useNavigate, useParams } from 'react-router-dom';
 import cn from 'classnames';
 
-import Page from 'pages/Page';
+import Page from 'common/Page';
 import { combineDateTime, leadingNullStr } from 'helpers/date';
 import { appUrls } from 'urls';
 import { TWA } from 'telegram/api';
@@ -11,10 +11,13 @@ import { TWABackButton } from 'telegram/BackButton';
 import { useRemoteEvents } from 'common/dataHooks';
 import { useStateWithRef } from 'helpers/hooks';
 import styles from 'pages/week/style.module.scss';
+import { TWAMainButton } from '../../telegram/MainButton';
 
 
 export function WeekPage() {
-    const { secretKey, date } = useParams();
+    let { secretKey, date } = useParams();
+    date = date === 'current' ? format(new Date(), 'yyyy-MM-dd') : date;
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -30,11 +33,6 @@ export function WeekPage() {
         return [format(new Date(selectedDatetime), 'yyyy-MM-dd'), getHours(new Date(selectedDatetime))];
     }, [selectedDatetime]);
 
-    useEffect(() => {
-        if (selectedDatetime) {
-            navigate(appUrls.event(secretKey, selectedDatetime));
-        }
-    }, [selectedDatetime]);
 
     function onHourClick(date, time) {
         setSelectedDatetime(combineDateTime(date, time));
@@ -62,7 +60,7 @@ export function WeekPage() {
         const formattedTime = `${time}:00`;
         return (
             <div className={ styles.row }>
-                <div className={ styles.cell }>{ formattedTime }</div>
+                <div className={ cn(styles.cell, styles.cellStarter) }>{ formattedTime }</div>
                 { weekDates?.map((date) => {
                     const formattedDate = format(date, 'yyyy-MM-dd');
                     const hourEvents = events[formattedDate]?.[hour] ?? [];
@@ -86,6 +84,7 @@ export function WeekPage() {
                                     hour={ hour }
                                     startDate={ new Date(selectedDatetime) }
                                     endDate={ addHours(new Date(selectedDatetime), 1) }
+                                    isSelected
                                 />
                             ) }
                         </div>
@@ -99,6 +98,19 @@ export function WeekPage() {
         navigate(appUrls.event(secretKey, selectedDatetimeRef.current));
     }
 
+    const tableBodyRef = useRef();
+
+    useEffect(() => {
+        const el = tableBodyRef.current;
+        console.log({el})
+        if (!el) return;
+        const firstRow = el.querySelector(`.${styles.row}`);
+        console.log({firstRow, 'height': firstRow.offsetHeight})
+        if (!firstRow) return;
+        console.log({'el.scrollTo': el.scrollTo})
+        el.scrollTo({ top: firstRow.offsetHeight })
+    }, []);
+
     if (!date) {
         return null;
     }
@@ -108,18 +120,20 @@ export function WeekPage() {
             <div className={ styles.table }>
                 <div className={ cn(styles.row, styles.rowHeader) }>
                     <div className={ cn(styles.cell, styles.cellHeader) }>
-                        *
                     </div>
                     { week }
                 </div>
                 <div
-                    className={ cn(styles.tableBody, selectedDatetime && styles.tableBodySelected) }
+                    className={ cn(styles.tableBody) }
+                    ref={ tableBodyRef }
                 >
                     { hours }
                 </div>
             </div>
-            <TWABackButton
-                to={ appUrls.calendar(secretKey) }
+            <TWAMainButton
+                text={ !selectedDatetime ? 'SELECT FREE TIME...' : 'CONTINUE'  }
+                disabled={ !selectedDatetime }
+                onClick={ toEventBooking }
             />
         </Page>
     );
@@ -129,7 +143,8 @@ export function WeekPage() {
 function HourEvent({
     hour,
     startDate,
-    endDate
+    endDate,
+    isSelected
 }) {
     const startMinute = getMinutes(startDate);
     const endHour = getHours(endDate);
@@ -139,11 +154,12 @@ function HourEvent({
     const height = hourDiff * 100 + Math.floor(+ endMinute / 60 * 100) - top;
     return (
         <div
-            className={ styles.cellEvent }
+            className={ cn(styles.cellEvent, isSelected && styles.cellEventSelected) }
             style={ {
                 top: `${top}%`,
                 height: `${height}%`
             } }
-        />
+        >
+        </div>
     );
 }

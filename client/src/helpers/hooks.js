@@ -38,7 +38,7 @@ export function useRequest(axiosReqObj) {
         error,
         isLoading,
         request,
-        _setResult,
+        _setResult
     }
 }
 

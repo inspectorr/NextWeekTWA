@@ -3,7 +3,7 @@ import 'react-calendar/dist/Calendar.css';
 import { useNavigate, useParams } from 'react-router-dom';
 import { format } from 'date-fns';
 
-import Page from 'pages/Page';
+import Page from 'common/Page';
 import { appUrls } from 'urls';
 
 

@@ -1,5 +1,7 @@
 html {
     user-select: none;
+    font-family: "Lucida Grande", "Lucida Sans Unicode", Arial, Helvetica, Verdana, sans-serif;
+    color: var(--tg-theme-text-color);
 }
 
 body {

@@ -22,20 +22,40 @@
 }
 
 .cell + .cell {
-  border-left: 1px solid black;
 }
 
 .cellHeader {
+  border: none !important;
+  background-color: unset !important;
 }
 
 .cellStarter {
+  border: none !important;
+}
 
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
 }
 
 .cellEvent {
   width: 100%;
-  background-color: red;
   position: absolute;
+  box-shadow:
+    inset rgba(0,0,0,.15) 0 -1px 1px,
+    inset rgba(252,255,255,.3) 0 1px 2px;
+  border-right: 0.5px solid var(--tg-theme-secondary-bg-color);
+  border-left: 0.5px solid var(--tg-theme-secondary-bg-color);
+  box-sizing: border-box;
+  background-color: #5ac8fb;
+  opacity: 1;
+  animation: fadeIn 300ms;
+  animation-timing-function: ease-in-out;
+  border-radius: 0.3rem;
+}
+
+.cellEventSelected {
+  background-color: #33CC00;
 }
 
 .row {
@@ -46,7 +66,7 @@
 }
 
 .row + .row {
-  border-top: 1px solid black;
+  border-top: 1px dashed rgba(180, 201, 210, 0.5);
 }
 
 .rowHeader {

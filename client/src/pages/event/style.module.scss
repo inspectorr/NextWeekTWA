@@ -1,21 +1,30 @@
-.hourView {
-  .hourViewRow {
-    display: flex;
-  }
+.event {
+  padding: 1.5rem;
+  background-color: var(--tg-theme-bg-color);
+}
 
-  .hourViewRow + .hourViewRow {
-    border-top: 1px solid black;
-  }
+.header {
+  font-weight: bold;
+  font-size: 1.3rem;
+  margin-bottom: 0.3rem;
+}
 
-  .hourViewRowLabel {
-    border-right: 1px solid black;
-  }
+.field {
+  margin-top: 1rem;
+  background-color: var(--tg-theme-bg-color);
+}
 
-  .hourViewRowSlot {
+.formInput {
+  padding: 0.6rem 1.5rem;
 
-  }
-
-  .hourViewRowSlotSelected {
-    background-color: red;
+  input {
+    background-color: inherit;
+    color: inherit;
+    padding: 0;
+    font-size: 1.2rem;
+    border: none;
+    outline: none;
+    box-shadow: none;
+    width: 100%;
   }
 }

@@ -55,4 +55,4 @@ class TelegramUser(TimeStampModel):
         return sync_to_async(cls.login)(*args, **kwargs)
 
     def get_web_app_url(self):
-        return f'{get_url()}/{self.secret_key}/'
+        return f'{get_url()}/{self.secret_key}/week/current/'
