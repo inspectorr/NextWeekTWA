@@ -1,25 +1,29 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
-import { addHours, format } from 'date-fns';
+import { addHours, format, getHours } from 'date-fns';
 
 import Page from 'pages/Page';
 import { TWA } from 'telegram/api';
 import { TWAMainButton } from 'telegram/MainButton';
 import { TWABackButton } from 'telegram/BackButton';
 import { useRequest } from 'helpers/hooks';
-import { combineDateTime } from 'helpers/date';
+import { combineDateTime, leadingNullStr } from 'helpers/date';
 import { appUrls, apiUrls } from 'urls';
+import styles from './style.module.scss';
 
 
 export function EventPage() {
+    const { secretKey, datetime } = useParams();
+    const date = format(new Date(datetime), 'yyyy-MM-dd');
+
     const {
         request: createEvent,
         isOk
-    } = useRequest({ method: 'POST' });
-
-    const { datetime } = useParams();
-    const date = format(new Date(datetime), 'yyyy-MM-dd');
+    } = useRequest({
+        method: 'POST',
+        url: apiUrls.createEvent(secretKey)
+    });
 
     const formApi = useForm({
         defaultValues: {
@@ -35,7 +39,6 @@ export function EventPage() {
             'end_date': combineDateTime(date, data.end_date)
         };
         createEvent({
-            url: apiUrls.createEvent,
             data: payload
         });
     }, []);
@@ -49,8 +52,11 @@ export function EventPage() {
     return (
         <Page>
             <div>
-                Creating event on { new Date(date).toLocaleDateString() }
+                Event on { new Date(date).toLocaleDateString() }
             </div>
+            <HourView
+                datetime={ datetime }
+            />
             <FormProvider { ...formApi }>
                 <form>
                     <FormInput
@@ -60,21 +66,21 @@ export function EventPage() {
                     <FormInput
                         name="start_date"
                         required
-                        inputProps={ { type: 'time', step: 900 } }
+                        inputProps={ { type: 'time' } }
                     />
                     <FormInput
                         name="end_date"
                         required
-                        inputProps={ { type: 'time', step: 900 } }
+                        inputProps={ { type: 'time' } }
                     />
                 </form>
             </FormProvider>
             <TWAMainButton
-                text="CREATE EVENT"
+                text="BOOK EVENT"
                 onClick={ formApi?.handleSubmit(onSubmit) }
             />
             <TWABackButton
-                to={ appUrls.week(date) }
+                to={ appUrls.week(secretKey, date) }
             />
         </Page>
     );
@@ -91,5 +97,37 @@ function FormInput({
             { ...register(name, { required }) }
             { ...inputProps }
         />
+    );
+}
+
+function HourView({
+    datetime,
+    minuteStep = 15
+}) {
+    const hour = getHours(new Date(datetime));
+
+    const minutes = useMemo(() => {
+        const result = [];
+        let current = 0;
+        while (current < 60) {
+            result.push(current);
+            current += minuteStep;
+        }
+        return result;
+    }, []);
+
+    return (
+        <div className={ styles.hourView }>
+            { minutes.map(minute => {
+                const time = `${leadingNullStr(hour)}:${leadingNullStr(minute)}`;
+                console.log({time})
+                return (
+                    <div key={ time } className={ styles.hourViewRow }>
+                        <div className={ styles.hourViewRowLabel }>{ time }</div>
+                        <div className={ styles.hourViewRowSlot }></div>
+                    </div>
+                );
+            }) }
+        </div>
     );
 }

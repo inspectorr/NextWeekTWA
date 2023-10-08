@@ -23,6 +23,7 @@ export function useRequest(axiosReqObj) {
                 }
             })
             .catch((error) => {
+                console.error(error);
                 _setError(error);
                 _setIsOk(false);
             })

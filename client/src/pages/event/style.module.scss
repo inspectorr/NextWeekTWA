@@ -1,0 +1,21 @@
+.hourView {
+  .hourViewRow {
+    display: flex;
+  }
+
+  .hourViewRow + .hourViewRow {
+    border-top: 1px solid black;
+  }
+
+  .hourViewRowLabel {
+    border-right: 1px solid black;
+  }
+
+  .hourViewRowSlot {
+
+  }
+
+  .hourViewRowSlotSelected {
+    background-color: red;
+  }
+}

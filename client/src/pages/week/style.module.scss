@@ -13,6 +13,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  position: relative;
 }
 
 .cell + .cell {
@@ -24,6 +25,12 @@
 
 .cellStarter {
 
+}
+
+.cellEvent {
+  width: 100%;
+  background-color: red;
+  position: absolute;
 }
 
 .row {

@@ -1,4 +1,4 @@
-class TelegramUserDefault:
+class TelegramAuthUser:
     requires_context = True
 
     def __call__(self, serializer_field):

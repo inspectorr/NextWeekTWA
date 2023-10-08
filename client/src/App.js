@@ -5,7 +5,7 @@ import { useRequest } from 'helpers/hooks';
 import { CalendarPage } from 'pages/calendar';
 import { WeekPage } from 'pages/week';
 import { EventPage } from 'pages/event';
-import { apiUrls } from 'urls';
+import { apiUrls, appUrls } from 'urls';
 import 'app.css';
 
 
@@ -25,9 +25,21 @@ function App() {
         <div className="App">
             <BrowserRouter>
                 <Routes>
-                    <Route path="/event/:datetime" element={ <EventPage /> } />
-                    <Route path="/week/:date" element={ <WeekPage /> } />
-                    <Route path="/" element={ <CalendarPage /> } />
+                    <Route
+                        key={1}
+                        path={ appUrls.calendar(':secretKey') }
+                        element={ <CalendarPage /> }
+                    />
+                    <Route
+                        key={2}
+                        path={ appUrls.week(':secretKey', ':date') }
+                        element={ <WeekPage /> }
+                    />
+                    <Route
+                        key={3}
+                        path={ appUrls.event(':secretKey', ':datetime') }
+                        element={ <EventPage /> }
+                    />
                 </Routes>
             </BrowserRouter>
         </div>
