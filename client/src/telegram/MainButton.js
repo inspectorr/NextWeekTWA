@@ -1,18 +1,18 @@
 import { useEffect, useLayoutEffect } from 'react';
 import { TWA } from './api';
 
-export function TWAMainButton({
+export function TWAMainButtonController({
     text,
     onClick,
     disabled,
 }) {
     useLayoutEffect(() => {
         if (disabled) {
-            TWA.MainButton.enabled = false;
+            TWA.MainButton.disable();
             TWA.MainButton.textColor = TWA.themeParams.hint_color;
             TWA.MainButton.color = TWA.themeParams.secondary_bg_color;
         } else {
-            TWA.MainButton.enabled = true;
+            TWA.MainButton.enable();
             TWA.MainButton.textColor = TWA.themeParams.button_text_color;
             TWA.MainButton.color = '#33CC00';
         }
@@ -22,7 +22,7 @@ export function TWAMainButton({
         TWA.MainButton.text = text;
     }, [text]);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         TWA.MainButton.onClick(onClick);
         TWA.MainButton.isVisible = true;
 

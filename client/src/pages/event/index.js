@@ -5,7 +5,7 @@ import { addHours, format, getHours, getTime } from 'date-fns';
 
 import Page from 'common/Page';
 import { TWA } from 'telegram/api';
-import { TWAMainButton } from 'telegram/MainButton';
+import { TWAMainButtonController } from 'telegram/MainButton';
 import { TWABackButton } from 'telegram/BackButton';
 import { useRequest } from 'helpers/hooks';
 import { combineDateTime } from 'helpers/date';
@@ -70,7 +70,7 @@ export function EventPage() {
                     </form>
                 </FormProvider>
             </div>
-            <TWAMainButton
+            <TWAMainButtonController
                 text="CONFIRM"
                 onClick={ formApi?.handleSubmit(onSubmit) }
             />

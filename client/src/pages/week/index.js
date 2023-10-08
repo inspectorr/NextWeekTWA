@@ -11,7 +11,7 @@ import { TWABackButton } from 'telegram/BackButton';
 import { useRemoteEvents } from 'common/dataHooks';
 import { useStateWithRef } from 'helpers/hooks';
 import styles from 'pages/week/style.module.scss';
-import { TWAMainButton } from '../../telegram/MainButton';
+import { TWAMainButtonController } from 'telegram/MainButton';
 
 
 export function WeekPage() {
@@ -102,13 +102,10 @@ export function WeekPage() {
 
     useEffect(() => {
         const el = tableBodyRef.current;
-        console.log({el})
         if (!el) return;
         const firstRow = el.querySelector(`.${styles.row}`);
-        console.log({firstRow, 'height': firstRow.offsetHeight})
         if (!firstRow) return;
-        console.log({'el.scrollTo': el.scrollTo})
-        el.scrollTo({ top: firstRow.offsetHeight })
+        el.scrollTo({ top: firstRow.offsetHeight * 9, behavior: 'smooth' })
     }, []);
 
     if (!date) {
@@ -130,8 +127,8 @@ export function WeekPage() {
                     { hours }
                 </div>
             </div>
-            <TWAMainButton
-                text={ !selectedDatetime ? 'SELECT FREE TIME...' : 'CONTINUE'  }
+            <TWAMainButtonController
+                text={ !selectedDatetime ? 'SELECT TIME' : 'CONTINUE'  }
                 disabled={ !selectedDatetime }
                 onClick={ toEventBooking }
             />
@@ -147,7 +144,7 @@ function HourEvent({
     isSelected
 }) {
     const startMinute = getMinutes(startDate);
-    const endHour = getHours(endDate);
+    const endHour = getHours(endDate) || 24;
     const endMinute = getMinutes(endDate);
     const hourDiff = endHour - hour;
     const top = Math.floor(startMinute / 60 * 100);
