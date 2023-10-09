@@ -2,7 +2,8 @@
 action=$1
 if [ "$action" = "runserver" ]; then
   python manage.py migrate
-  python manage.py runserver 0:8000
+  python manage.py collectstatic
+  gunicorn --bind 0.0.0.0:8000 --reload application.wsgi:application
 elif [ "$action" = "runbot" ]; then
   python manage.py runbot
 elif [ "$action" = "runcelery" ]; then
