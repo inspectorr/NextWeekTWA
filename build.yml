@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  client:
+    image: ${NAMESPACE}/nw_client-${BUILD_VERSION}:latest
+    build:
+      context: client
+      target: prod-nginx
+
+  server:
+    image: ${NAMESPACE}/nw_server-${BUILD_VERSION}:latest
+    build:
+      context: server
