@@ -11,3 +11,8 @@ services:
     image: ${NAMESPACE}/nw_server-${BUILD_VERSION}:latest
     build:
       context: server
+
+  nginx:
+    image: ${NAMESPACE}/nw_nginx-${BUILD_VERSION}:latest
+    build:
+      context: .nginx
