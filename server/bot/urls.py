@@ -1,7 +1,8 @@
 from django.urls import path
 
-from bot.views import auth_telegram_user
+import bot.views as views
 
 urlpatterns = [
-    path('auth/', auth_telegram_user, name='auth_telegram_user'),
+    path('auth/', views.auth_telegram_user, name='auth_telegram_user'),
+    path('webapp/', views.redirect_web_app, name='redirect_web_app')
 ]

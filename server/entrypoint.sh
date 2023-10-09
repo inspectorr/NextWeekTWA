@@ -5,4 +5,6 @@ if [ "$action" = "runserver" ]; then
   python manage.py runserver 0:8000
 elif [ "$action" = "runbot" ]; then
   python manage.py runbot
+elif [ "$action" = "runcelery" ]; then
+  celery -A application worker --loglevel=INFO
 fi

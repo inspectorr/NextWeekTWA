@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { TWA } from '../telegram';
+import { TWA } from 'telegram/api';
 
 function getHeaders() {
     const headers = {'content-type': 'application/json'};
@@ -10,9 +10,7 @@ function getHeaders() {
     return headers;
 }
 
-const request = axios.create({
+export const axiosRequest = axios.create({
     baseURL: '/',
     headers: getHeaders()
 });
-
-export default request;

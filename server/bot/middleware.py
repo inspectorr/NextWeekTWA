@@ -34,6 +34,9 @@ class TelegramWebAppAuthMiddleware:
 
         request.telegram_user, _ = TelegramUser.login(user_dict)
 
+        if request.telegram_user.is_blocked:
+            return HttpResponse(status=403)
+
         return None
 
     @classmethod

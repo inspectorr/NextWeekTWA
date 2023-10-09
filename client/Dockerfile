@@ -1,4 +1,4 @@
-FROM node:20-slim as client-builder
+FROM node:20-alpine as client-builder
 
 WORKDIR /app
 
@@ -7,6 +7,7 @@ RUN npm install
 
 COPY public public
 COPY src src
+COPY jsconfig.json jsconfig.json
 
 FROM client-builder as dev
 

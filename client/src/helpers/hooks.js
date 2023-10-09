@@ -1,41 +1,52 @@
-import { useEffect, useState } from 'react';
-import request from './request';
+import { useEffect, useRef, useState } from 'react';
+import { axiosRequest } from './request';
 
-export function useRequest(params) {
-    const [result, setResult] = useState(null);
-    const [isLoading, setIsLoading] = useState(false);
+export function useRequest(axiosReqObj) {
+    const [result, _setResult] = useState(null);
+    const [error, _setError] = useState(null);
+    const [isLoading, _setIsLoading] = useState(false);
+    const [isOk, _setIsOk] = useState(null);
 
-    function makeRequest(data = {}) {
-        const payload = { ...params, ...data };
-        setIsLoading(true);
-        request(payload)
+    function request(axiosLocalReqObj = {}) {
+        const payload = { ...axiosReqObj, ...axiosLocalReqObj };
+        _setIsLoading(true);
+        _setResult(null);
+        _setError(null);
+        _setIsOk(null);
+        axiosRequest(payload)
             .then((result) => {
-                setResult(result.data);
+                if (result.status >= 200 && result.status < 300) {
+                    _setResult(result);
+                    _setIsOk(true);
+                } else {
+                    throw result;
+                }
             })
-            .catch(console.log) // todo error handling
+            .catch((error) => {
+                console.error(error);
+                _setError(error);
+                _setIsOk(false);
+            })
             .finally(() => {
-                setIsLoading(false);
+                _setIsLoading(false);
             });
     }
 
-    return [result, isLoading, makeRequest, setResult]
+    return {
+        isOk,
+        result,
+        error,
+        isLoading,
+        request,
+        _setResult
+    }
 }
 
-export function useApi(url) {
-    const [result, isLoading, makeRequest, setResult] = useRequest({ method: 'get', url });
-
+export function useStateWithRef(defaultState) {
+    const [state, setState] = useState(defaultState);
+    const ref = useRef(defaultState);
     useEffect(() => {
-        makeRequest();
-    }, []);
-
-    function reload(manual_offline_data) {
-        if (manual_offline_data) {
-            setResult(manual_offline_data);
-            return;
-        }
-
-        return makeRequest();
-    }
-
-    return [result, isLoading, reload];
+        ref.current = state;
+    }, [state]);
+    return [state, setState, ref];
 }

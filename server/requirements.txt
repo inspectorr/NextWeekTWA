@@ -1,6 +1,6 @@
 python-telegram-bot==20.5
-redis==5.0.0
 Django==4.2.5
-python-dotenv==1.0.0
 psycopg2-binary==2.9.7
-django-webpack-loader==0.7.0
+djangorestframework==3.14.0
+celery==5.3.4
+redis==5.0.0
