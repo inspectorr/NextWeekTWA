@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
 import { TWA } from './api';
 
 export function TWAMainButtonController({
@@ -6,8 +6,13 @@ export function TWAMainButtonController({
     onClick,
     disabled,
 }) {
+    const disabledRef = useRef();
     useLayoutEffect(() => {
-        if (disabled) {
+        disabledRef.current = disabled;
+    }, [disabled]);
+
+    function setColorSettings() {
+        if (disabledRef.current) {
             TWA.MainButton.disable();
             TWA.MainButton.textColor = TWA.themeParams.hint_color;
             TWA.MainButton.color = TWA.themeParams.secondary_bg_color;
@@ -16,6 +21,10 @@ export function TWAMainButtonController({
             TWA.MainButton.textColor = TWA.themeParams.button_text_color;
             TWA.MainButton.color = '#33CC00';
         }
+    }
+
+    useLayoutEffect(() => {
+        setColorSettings();
     }, [disabled]);
 
     useLayoutEffect(() => {
@@ -30,6 +39,12 @@ export function TWAMainButtonController({
         //     TWA.MainButton.offClick(onClick);
         //     TWA.MainButton.isVisible = false;
         // };
+    }, []);
+
+    useLayoutEffect(() => {
+        TWA.onEvent('themeChanged', () => {
+             setColorSettings();
+        });
     }, []);
 
     return null;

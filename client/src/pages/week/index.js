@@ -173,17 +173,24 @@ function ShareWeek({
     const formattedDate = format(new Date(date), 'yyyyMMdd');
     const bot = localStorage.getItem('TELEGRAM_BOT_USERNAME');
     const app = localStorage.getItem('TELEGRAM_WEB_APP_NAME');
-    const link = `https://t.me/${bot}/${app}?startapp=${secretKey}+${formattedDate}`;
+    const link = `https://t.me/${bot}/${app}?startapp=${secretKey}-${formattedDate}`;
 
     function handleClick() {
-      window.navigator.clipboard.writeText(link).then(
-          // todo alert
-      );
+        window.navigator.share({
+            title: 'Book me on Next Week!',
+            text: 'Link to a Telegram web app.',
+            url: link
+        }).then(() => {
+            TWA.close();
+        });
     }
 
     return (
         <div
             onClick={ handleClick }
+            style={ {
+                transform: 'scale(1.5)',
+            } }
         >
             <ShareIconSVG
                 fillColor={ TWA.themeParams.link_color }

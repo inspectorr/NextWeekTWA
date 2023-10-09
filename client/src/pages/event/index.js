@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useMemo } from 'react';
-import { FormProvider, useFormContext, useForm } from 'react-hook-form';
+import { useCallback, useEffect } from 'react';
+import { FormProvider, useFormContext, useForm, Form } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
-import { addHours, format, getHours, getTime } from 'date-fns';
+import { addHours, format } from 'date-fns';
 
 import Page from 'common/Page';
 import { TWA } from 'telegram/api';
@@ -59,7 +59,7 @@ export function EventPage() {
             </div>
             <div className={ styles.field }>
                 <FormProvider { ...formApi }>
-                    <form>
+                    <Form>
                         <FormInput
                             name="title"
                             inputProps={ {
@@ -67,7 +67,7 @@ export function EventPage() {
                                 autoFocus: true
                             } }
                         />
-                    </form>
+                    </Form>
                 </FormProvider>
             </div>
             <TWAMainButtonController

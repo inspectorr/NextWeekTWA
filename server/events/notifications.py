@@ -15,7 +15,8 @@ class EventNotifier:
 
     def notify(self):
         self._notify_user(self.event.tg_owner)
-        self._notify_user(self.event.tg_author)
+        if self.event.tg_owner != self.event.tg_author:
+            self._notify_user(self.event.tg_author)
 
     def _notify_user(self, user: TelegramUser):
         # todo background
@@ -30,13 +31,18 @@ class EventNotifier:
             logging.exception(e)
 
     def _get_notification_text(self, receiver: TelegramUser):
-        event = self.event
-        is_owner = event.tg_owner == receiver
-        owner_text = f"[{event.tg_owner.first_name}](tg://user?id={event.tg_owner.id})'s" if not is_owner else 'your'
-        start_date = event.start_date.strftime('%d %B, %Y')
-        start_time = event.start_date.strftime('%H:%M')
-        end_time = event.end_date.strftime('%H:%M')
+        e = self.event
+        display_owner = receiver == e.tg_owner
+        owner = f"[{e.tg_owner.first_name}](tg://user?id={e.tg_owner.id})'s" if not display_owner else 'your'
+        display_author = receiver != e.tg_author
+        author = f"[{e.tg_author.first_name}](tg://user?id={e.tg_author.id})" if display_author else None
+        start_date = e.start_date.strftime('%d %B, %Y')
+        start_time = e.start_date.strftime('%H:%M')
+        end_time = e.end_date.strftime('%H:%M')
         return (
-            f"🗓 New event on {owner_text} calendar:\n"
-            f"{start_date}\n{start_time} to {end_time}"
+            f'*New event on {owner} calendar:*' +
+            (f'\n📝 {e.title}' if e.title else '') +
+            f'\n🗓 {start_date}' +
+            f'\n🕓 {start_time} to {end_time}' +
+            (f'\n✍️ {author}' if display_author else '')
         )
