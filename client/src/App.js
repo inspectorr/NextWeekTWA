@@ -31,18 +31,11 @@ function App() {
         <div className="App">
             <BrowserRouter>
                 <Routes>
-                    {/*<Route*/}
-                    {/*    key={1}*/}
-                    {/*    path={ appUrls.calendar(':secretKey') }*/}
-                    {/*    element={ <CalendarPage /> }*/}
-                    {/*/>*/}
                     <Route
-                        key={2}
                         path={ appUrls.week(':secretKey', ':date') }
                         element={ <WeekPage /> }
                     />
                     <Route
-                        key={3}
                         path={ appUrls.event(':secretKey', ':datetime') }
                         element={ <EventPage /> }
                     />

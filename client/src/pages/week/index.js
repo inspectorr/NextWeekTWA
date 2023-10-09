@@ -182,6 +182,8 @@ function ShareWeek({
             url: link
         }).then(() => {
             TWA.close();
+        }).catch(() => {
+            console.info('Sharing aborted');
         });
     }
 

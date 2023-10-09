@@ -1,5 +1,6 @@
 html {
     user-select: none;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
     font-family: "Lucida Grande", "Lucida Sans Unicode", Arial, Helvetica, Verdana, sans-serif;
     color: var(--tg-theme-text-color);
 }
