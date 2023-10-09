@@ -30,5 +30,5 @@ class Event(TimeStampModel):
     def __str__(self):
         return f'Event {self.start_date}'
 
-    def can_see_detail(self, telegram_user):
+    def is_participant(self, telegram_user):
         return telegram_user in [self.tg_owner, self.tg_author]

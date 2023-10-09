@@ -23,5 +23,5 @@ setup_handlers(app)
 def run():
     app.run_polling(
         allowed_updates=Update.ALL_TYPES,
-        connect_timeout=30
+        connect_timeout=10
     )

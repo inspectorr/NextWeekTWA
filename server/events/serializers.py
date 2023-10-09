@@ -17,19 +17,19 @@ class EventCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Event
-        fields = ('start_date', 'end_date', 'title', 'tg_author', 'tg_owner', 'tg_participants')
+        fields = ('start_date', 'end_date', 'title', 'tg_author', 'tg_owner')
 
 
 class EventDetailSerializer(serializers.ModelSerializer):
-    can_see_detail = serializers.SerializerMethodField()
+    is_participant = serializers.SerializerMethodField()
     title = serializers.SerializerMethodField()
 
-    def get_can_see_detail(self, event):
-        return event.can_see_detail(self.context['request'].telegram_user)
+    def get_is_participant(self, event):
+        return event.is_participant(self.context['request'].telegram_user)
 
     def get_title(self, event):
-        return event.title if self.get_can_see_detail(event) else None
+        return event.title if self.get_is_participant(event) else None
 
     class Meta:
         model = Event
-        fields = ('start_date', 'end_date', 'title', 'can_see_detail')
+        fields = ('start_date', 'end_date', 'title', 'is_participant')

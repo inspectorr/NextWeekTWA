@@ -1,9 +1,13 @@
 from datetime import datetime
+
+from rest_framework import status
 from rest_framework.generics import CreateAPIView, ListAPIView
+from rest_framework.response import Response
 
 from bot.drf.mixins import TelegramAuthViewMixin
 from bot.models import TelegramUser
 from events.models import Event
+from events.notifications import EventNotifier
 from events.serializers import EventCreateSerializer, EventDetailSerializer
 
 
@@ -19,6 +23,13 @@ class TelegramOwnerContextMixin:
 class EventCreateView(TelegramOwnerContextMixin, TelegramAuthViewMixin, CreateAPIView):
     serializer_class = EventCreateSerializer
     queryset = Event.objects.all()
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        event = serializer.save()
+        EventNotifier(event).notify()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class EventListView(TelegramOwnerContextMixin, TelegramAuthViewMixin, ListAPIView):

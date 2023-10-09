@@ -9,6 +9,7 @@ import { appUrls } from 'urls';
 import { TWA } from 'telegram/api';
 import { TWABackButton } from 'telegram/BackButton';
 import { useRemoteEvents } from 'common/dataHooks';
+import { ShareIconSVG } from 'common/ShareIcon';
 import { useStateWithRef } from 'helpers/hooks';
 import styles from 'pages/week/style.module.scss';
 import { TWAMainButtonController } from 'telegram/MainButton';
@@ -117,6 +118,10 @@ export function WeekPage() {
             <div className={ styles.table }>
                 <div className={ cn(styles.row, styles.rowHeader) }>
                     <div className={ cn(styles.cell, styles.cellHeader) }>
+                        <ShareWeek
+                            date={ date }
+                            secretKey={ secretKey }
+                        />
                     </div>
                     { week }
                 </div>
@@ -157,6 +162,32 @@ function HourEvent({
                 height: `${height}%`
             } }
         >
+        </div>
+    );
+}
+
+function ShareWeek({
+    secretKey,
+    date
+}) {
+    const formattedDate = format(new Date(date), 'yyyyMMdd');
+    const bot = localStorage.getItem('TELEGRAM_BOT_USERNAME');
+    const app = localStorage.getItem('TELEGRAM_WEB_APP_NAME');
+    const link = `https://t.me/${bot}/${app}?startapp=${secretKey}+${formattedDate}`;
+
+    function handleClick() {
+      window.navigator.clipboard.writeText(link).then(
+          // todo alert
+      );
+    }
+
+    return (
+        <div
+            onClick={ handleClick }
+        >
+            <ShareIconSVG
+                fillColor={ TWA.themeParams.link_color }
+            />
         </div>
     );
 }

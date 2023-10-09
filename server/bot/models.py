@@ -5,7 +5,7 @@ from asgiref.sync import sync_to_async
 from django.db import models
 from django.utils import timezone
 
-from application.host import get_url
+from application.host import get_web_app_url
 from application.models import TimeStampModel
 
 
@@ -55,4 +55,4 @@ class TelegramUser(TimeStampModel):
         return sync_to_async(cls.login)(*args, **kwargs)
 
     def get_web_app_url(self):
-        return f'{get_url()}/{self.secret_key}/week/current/'
+        return get_web_app_url(self.secret_key)

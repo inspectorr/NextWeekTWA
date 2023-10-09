@@ -10,7 +10,8 @@ import 'app.css';
 
 function App() {
     const {
-        request: authenticate
+        request: authenticate,
+        result
     } = useRequest({
         url: apiUrls.auth,
         method: 'POST'
@@ -19,6 +20,12 @@ function App() {
     useEffect(() => {
         authenticate();
     }, []);
+
+    useEffect(() => {
+        if (!result?.data?.config) return;
+        localStorage.setItem('TELEGRAM_BOT_USERNAME', result.data.config.TELEGRAM_BOT_USERNAME);
+        localStorage.setItem('TELEGRAM_WEB_APP_NAME', result.data.config.TELEGRAM_WEB_APP_NAME);
+    }, [result]);
 
     return (
         <div className="App">

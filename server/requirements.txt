@@ -1,4 +1,4 @@
-python-telegram-bot==20.5
+python-telegram-bot[job-queue]==20.5
 Django==4.2.5
 psycopg2-binary==2.9.7
 djangorestframework==3.14.0
