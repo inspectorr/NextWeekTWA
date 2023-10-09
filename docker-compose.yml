@@ -12,7 +12,7 @@ x-python: &python
 services:
   database:
     <<: *env
-    container_name: database
+    container_name: nw_database
     image: postgres:16-alpine
     restart: always
     volumes:
@@ -20,11 +20,11 @@ services:
 
   redis:
     image: redis:alpine
-    container_name: redis
+    container_name: nw_redis
     restart: always
 
   client:
-    container_name: client
+    container_name: nw_client
     build:
       context: client
       target: dev
@@ -35,7 +35,7 @@ services:
 
   server:
     <<: *python
-    container_name: server
+    container_name: nw_server
     command: runserver
     volumes:
       - ./server:/app
@@ -46,7 +46,7 @@ services:
 
   bot:
     <<: *python
-    container_name: bot
+    container_name: nw_bot
     command: runbot
     restart: always
     volumes:
@@ -56,7 +56,7 @@ services:
 
   celery:
     <<: *python
-    container_name: celery
+    container_name: nw_celery
     command: runcelery
     restart: always
     volumes:
@@ -65,13 +65,13 @@ services:
       - redis
 
   nginx:
-    container_name: nginx
-    image: nginx:1.25.2
+    image: nginx:1.25.0-alpine
+    container_name: nw_nginx
     restart: always
     ports:
       - '8765:80'
     volumes:
-      - .dev/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - .nginx/nginx.conf:/etc/nginx/nginx.conf
     depends_on:
       - server
 
