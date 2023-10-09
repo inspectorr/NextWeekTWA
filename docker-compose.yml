@@ -8,9 +8,6 @@ x-python: &python
   <<: *env
   build:
     context: server
-  depends_on:
-    - client
-    - database
 
 services:
   database:
@@ -20,8 +17,11 @@ services:
     restart: always
     volumes:
       - db_data:/var/lib/postgresql/data/
-    ports:
-      - '5433:5432'
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    restart: always
 
   client:
     container_name: client
@@ -32,8 +32,6 @@ services:
       - ./client/src:/app/src
       - ./client/package.json:/app/package.json
       - ./client/jsconfig.json:/app/jsconfig.json
-    ports:
-      - '3000:3000'
 
   server:
     <<: *python
@@ -41,8 +39,10 @@ services:
     command: runserver
     volumes:
       - ./server:/app
-    ports:
-      - '8000:8000'
+    depends_on:
+      - redis
+      - database
+      - client
 
   bot:
     <<: *python
@@ -51,6 +51,18 @@ services:
     restart: always
     volumes:
       - ./server:/app
+    depends_on:
+      - server
+
+  celery:
+    <<: *python
+    container_name: celery
+    command: runcelery
+    restart: always
+    volumes:
+      - ./server:/app
+    depends_on:
+      - redis
 
   nginx:
     container_name: nginx

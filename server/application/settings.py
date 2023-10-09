@@ -132,3 +132,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 STATIC_URL = '/static/'
+
+
+# Celery
+REDIS_URL = 'redis://redis:6379'
+CELERY_BROKER_URL = REDIS_URL
+CELERY_TASK_DEFAULT_QUEUE = 'default'

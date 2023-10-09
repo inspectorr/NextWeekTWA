@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from bot.drf.mixins import TelegramAuthViewMixin
 from bot.models import TelegramUser
 from events.models import Event
-from events.notifications import EventNotifier
+from events.notifications import EventCreateNotifier
 from events.serializers import EventCreateSerializer, EventDetailSerializer
 
 
@@ -28,7 +28,7 @@ class EventCreateView(TelegramOwnerContextMixin, TelegramAuthViewMixin, CreateAP
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         event = serializer.save()
-        EventNotifier(event).notify()
+        EventCreateNotifier.delay(event)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 

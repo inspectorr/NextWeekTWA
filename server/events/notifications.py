@@ -1,40 +1,44 @@
-import logging
-
 from asgiref.sync import async_to_sync
 
+from application.celery import app
 from bot.models import TelegramUser
-from bot.telegram.app import app
+from bot.telegram.app import get_bot
 from events.models import Event
 
 
-class EventNotifier:
+class EventCreateNotifier:
     event: Event
 
     def __init__(self, event: Event):
         self.event = event
 
-    def notify(self):
-        self._notify_user(self.event.tg_owner)
-        if self.event.tg_owner != self.event.tg_author:
-            self._notify_user(self.event.tg_author)
+    @classmethod
+    def delay(cls, event):
+        cls.run.delay(event.id, event.tg_owner.id)
+        if event.tg_author != event.tg_owner:
+            cls.run.delay(event.id, event.tg_author.id)
 
-    def _notify_user(self, user: TelegramUser):
-        # todo background
-        try:
-            async_to_sync(app.bot.send_message)(
-                user.id,
-                text=self._get_notification_text(user),
-                parse_mode='MarkdownV2',
-                pool_timeout=10
-            )
-        except Exception as e:
-            logging.exception(e)
+    @staticmethod
+    @app.task
+    def run(event_id, user_id):
+        event = Event.objects.get(pk=event_id)
+        user = TelegramUser.objects.get(pk=user_id)
+        EventCreateNotifier(event).notify(user)
 
-    def _get_notification_text(self, receiver: TelegramUser):
+    def notify(self, user: TelegramUser):
+        bot = get_bot()
+        async_to_sync(bot.send_message)(
+            user.id,
+            text=self.get_notification_text(user),
+            parse_mode='MarkdownV2',
+            pool_timeout=10
+        )
+
+    def get_notification_text(self, user: TelegramUser):
         e = self.event
-        display_owner = receiver == e.tg_owner
+        display_owner = user == e.tg_owner
         owner = f"[{e.tg_owner.first_name}](tg://user?id={e.tg_owner.id})'s" if not display_owner else 'your'
-        display_author = receiver != e.tg_author
+        display_author = user != e.tg_author
         author = f"[{e.tg_author.first_name}](tg://user?id={e.tg_author.id})" if display_author else None
         start_date = e.start_date.strftime('%d %B, %Y')
         start_time = e.start_date.strftime('%H:%M')
