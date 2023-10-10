@@ -11,7 +11,7 @@ import { useRemoteEvents } from 'common/dataHooks';
 import { ShareIconSVG } from 'common/ShareIcon';
 import { useStateWithRef } from 'helpers/hooks';
 import styles from 'pages/week/style.module.scss';
-import { TWAMainButtonController } from 'telegram/MainButton';
+import { TWAMainButton } from 'telegram/MainButton';
 
 
 export function WeekPage() {
@@ -38,10 +38,10 @@ export function WeekPage() {
         setSelectedDatetime(combineDateTime(date, time));
     }
 
-    const weekStart = useMemo(() => startOfWeek(new Date(date), { weekStartsOn: 1 }), [date]);
-    const weekEnd = useMemo(() => endOfWeek(new Date(date), { weekStartsOn: 1 }), [date]);
+    const weekStart =  startOfWeek(new Date(date), { weekStartsOn: 1 });
+    const weekEnd =  startOfWeek(new Date(date), { weekStartsOn: 1 });
 
-    const events = useRemoteEvents(weekStart, weekEnd);
+    const [events, isLoading] = useRemoteEvents(weekStart.toISOString(), weekEnd.toISOString());
 
     const weekDates = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
     const week = weekDates?.map((weekDate) => {
@@ -131,9 +131,10 @@ export function WeekPage() {
                     { hours }
                 </div>
             </div>
-            <TWAMainButtonController
+            <TWAMainButton
                 text={ !selectedDatetime ? 'SELECT TIME' : 'CONTINUE'  }
                 disabled={ !selectedDatetime }
+                loading={ isLoading }
                 onClick={ toEventBooking }
             />
         </Page>

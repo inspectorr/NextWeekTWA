@@ -6,38 +6,40 @@ import { useRequest } from 'helpers/hooks';
 import { apiUrls } from 'urls';
 
 
-export function useRemoteEvents(startDate, endDate) {
+export function useRemoteEvents(startDateIsoString, endDateIsoString) {
     const { secretKey } = useParams();
 
     const {
         request: listEvents,
-        result
+        result,
+        isLoading
     } = useRequest({ method: 'GET' });
 
     useEffect(() => {
         listEvents({
-            url: apiUrls.listEvents(secretKey, startDate.toISOString(), endDate.toISOString()),
+            url: apiUrls.listEvents(secretKey, startDateIsoString, endDateIsoString),
         });
-    }, [startDate, endDate]);
+    }, [startDateIsoString, endDateIsoString]);
 
-    return useMemo(() => {
-        if (!result || !result.data) {
-            return {};
-        }
+    return [formatEvents(result?.data ?? {}), isLoading]
+}
 
-        const store = {};
-        for (const event of result.data) {
-            const date = new Date(event.start_date);
-            const isoDate = format(date, 'yyyy-MM-dd');
-            const hour = String(getHours(date));
-            if (!store[isoDate]) {
-                store[isoDate] = {};
-            }
-            if (!store[isoDate][hour]) {
-                store[isoDate][hour] = [];
-            }
-            store[isoDate][hour].push(event);
+function formatEvents(data) {
+    if (!data) {
+        return {};
+    }
+    const events = {};
+    for (const event of data) {
+        const date = new Date(event.start_date);
+        const isoDate = format(date, 'yyyy-MM-dd');
+        const hour = String(getHours(date));
+        if (!events[isoDate]) {
+            events[isoDate] = {};
         }
-        return store;
-    }, [result]);
+        if (!events[isoDate][hour]) {
+            events[isoDate][hour] = [];
+        }
+        events[isoDate][hour].push(event);
+    }
+    return events;
 }

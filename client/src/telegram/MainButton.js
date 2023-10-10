@@ -1,9 +1,10 @@
 import { useEffect, useLayoutEffect, useRef } from 'react';
 import { TWA } from './api';
 
-export function TWAMainButtonController({
+export function TWAMainButton({
     text,
     onClick,
+    loading,
     disabled,
 }) {
     const disabledRef = useRef();
@@ -26,6 +27,16 @@ export function TWAMainButtonController({
     useLayoutEffect(() => {
         setColorSettings();
     }, [disabled]);
+
+    useLayoutEffect(() => {
+        if (loading) {
+            TWA.MainButton.showProgress();
+            TWA.MainButton.disable();
+        } else {
+            TWA.MainButton.hideProgress();
+            TWA.MainButton.enable();
+        }
+    }, [loading]);
 
     useLayoutEffect(() => {
         TWA.MainButton.text = text;
