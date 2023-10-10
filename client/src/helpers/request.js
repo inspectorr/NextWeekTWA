@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { TWA } from 'telegram/api';
+import { TWA } from 'common/telegram/api';
 
 function getHeaders() {
     const headers = {'content-type': 'application/json'};

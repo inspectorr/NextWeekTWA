@@ -6,12 +6,11 @@ import cn from 'classnames';
 import Page from 'common/Page';
 import { combineDateTime, leadingNullStr } from 'helpers/date';
 import { appUrls } from 'urls';
-import { TWA } from 'telegram/api';
+import { TWA } from 'common/telegram/api';
 import { useRemoteEvents } from 'common/dataHooks';
 import { ShareIconSVG } from 'common/ShareIcon';
 import { useStateWithRef } from 'helpers/hooks';
 import styles from 'pages/week/style.module.scss';
-import { TWAMainButton } from 'telegram/MainButton';
 
 
 export function WeekPage() {
@@ -109,7 +108,15 @@ export function WeekPage() {
     }
 
     return (
-        <Page>
+        <Page
+            mainButtonProps={ {
+                visible: true,
+                text: !selectedDatetime ? 'SELECT TIME' : 'CONTINUE',
+                disabled: !selectedDatetime,
+                loading: isLoading,
+                onClick: toEventBooking,
+            } }
+        >
             <div className={ styles.table }>
                 <div className={ cn(styles.row, styles.rowHeader) }>
                     <div className={ cn(styles.cell, styles.cellHeader) }>
@@ -127,12 +134,6 @@ export function WeekPage() {
                     { hours }
                 </div>
             </div>
-            <TWAMainButton
-                text={ !selectedDatetime ? 'SELECT TIME' : 'CONTINUE'  }
-                disabled={ !selectedDatetime }
-                loading={ isLoading }
-                onClick={ toEventBooking }
-            />
         </Page>
     );
 }

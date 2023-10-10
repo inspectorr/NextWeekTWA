@@ -4,9 +4,7 @@ import { useParams } from 'react-router-dom';
 import { addHours, format } from 'date-fns';
 
 import Page from 'common/Page';
-import { TWA } from 'telegram/api';
-import { TWAMainButton } from 'telegram/MainButton';
-import { TWABackButton } from 'telegram/BackButton';
+import { TWA } from 'common/telegram/api';
 import { useRequest } from 'helpers/hooks';
 import { combineDateTime } from 'helpers/date';
 import { appUrls, apiUrls } from 'urls';
@@ -49,7 +47,19 @@ export function EventPage() {
     }, [isOk]);
 
     return (
-        <Page twaHeaderSecondary>
+        <Page
+            twaHeaderSecondary
+            mainButtonProps={ {
+                visible: true,
+                text: 'CONFIRM',
+                onClick: formApi?.handleSubmit(onSubmit),
+                loading: isLoading
+            } }
+            backButtonProps={ {
+                visible: true,
+                to: appUrls.week(secretKey, date)
+            } }
+        >
             <div className={ styles.event }>
                 <div className={ styles.header }>
                     🗓 NEW EVENT { new Date(date).toLocaleDateString() }
@@ -71,14 +81,6 @@ export function EventPage() {
                     </Form>
                 </FormProvider>
             </div>
-            <TWAMainButton
-                text="CONFIRM!"
-                onClick={ formApi?.handleSubmit(onSubmit) }
-                loading={ isLoading }
-            />
-            <TWABackButton
-                to={ appUrls.week(secretKey, date) }
-            />
         </Page>
     );
 }
