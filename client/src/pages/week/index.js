@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { format, startOfWeek, endOfWeek, addDays, getDate, getHours, getMinutes, addHours } from 'date-fns';
 import { useNavigate, useParams } from 'react-router-dom';
 import cn from 'classnames';
@@ -7,7 +7,6 @@ import Page from 'common/Page';
 import { combineDateTime, leadingNullStr } from 'helpers/date';
 import { appUrls } from 'urls';
 import { TWA } from 'telegram/api';
-import { TWABackButton } from 'telegram/BackButton';
 import { useRemoteEvents } from 'common/dataHooks';
 import { ShareIconSVG } from 'common/ShareIcon';
 import { useStateWithRef } from 'helpers/hooks';
@@ -21,7 +20,7 @@ export function WeekPage() {
 
     const navigate = useNavigate();
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         TWA.expand();
     }, []);
 
