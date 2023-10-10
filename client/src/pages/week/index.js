@@ -102,7 +102,7 @@ export function WeekPage() {
         if (!el) return;
         const firstRow = el.querySelector(`.${styles.row}`);
         if (!firstRow) return;
-        el.scrollTo({ top: firstRow.offsetHeight * SCROLL_TO_HOUR, behavior: 'smooth' })
+        el.scrollTo({ top: firstRow.offsetHeight * SCROLL_TO_HOUR, behavior: 'smooth' });
     }
 
     if (!date) {
