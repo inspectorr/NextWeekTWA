@@ -1,5 +1,11 @@
 # NextWeekTWA
 
+Telegram Mini App that implements event booking flow on a week 
+and provides ability to share your week with a friend/customer, so he can book an hour.
+
+![image info](.github/1.jpg)
+![image info](.github/2.jpg)
+
 ### Prerequisites
 * [Docker](https://www.docker.com/) installed on your OS,
 * [Telegram](https://telegram.org/) account.
@@ -11,6 +17,49 @@
 * [React](https://react.dev/) & [CRA](https://create-react-app.dev/) on client,
 * [Nginx](https://www.nginx.com/) as reverse proxy and static server,
 * [PostgreSQL](https://www.postgresql.org/) as database.
+
+### Features overview
+
+#### Authentication
+Authentication implemented with middleware parsing user's 
+`initData` [as documented](https://core.telegram.org/bots/webapps#validating-data-received-via-the-mini-app)
+sent in `X-Telegram-Auth-Token` header, see `server/bot/middleware.py` 
+
+#### Web App Links
+There is a link you can share with a friend: it contains your secret user key and some data, representing a week.
+For example: https://t.me/NextWeekTheBot/app?startapp=647C6C-20231010
+
+Having this link, anyone can open your calendar and book an event on it. 
+
+#### Notifications
+
+There are two main role in the booking flow: _event owner_ and _event author_.
+Anytime an event created, the bot will send a notification to both. See `server/events/notifications.py`
+
+#### React-friendly [main and back buttons](https://core.telegram.org/bots/webapps#mainbutton)
+
+There is `<Page/> (client/src/common/Page)` React component, providing easy access to button usage like this:
+```
+<Page
+    mainButtonProps={ {
+        visible: true,
+        text: 'DO SOMETING!',
+        onClick: () => doSomething(),
+        loading: isLoading
+    } }
+    backButtonProps={ {
+        visible: true,
+        to: <your app url>
+    } }
+>
+```
+Note that ANY route of your app must be wrapped into this component for correct work: 
+it will help you sync current app state with buttons.  
+
+#### Admin pannel
+
+As an administrator, you can use Django's `/admin` to control any app content, 
+if your model is registered in `admin.py`.
 
 ### Configuration
 To setup environment variables, classic `.env` file is used. Let's see:
