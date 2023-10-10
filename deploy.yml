@@ -49,14 +49,6 @@ services:
     depends_on:
       - redis
 
-  nginx:
-    image: ${NAMESPACE}/nw_nginx-${BUILD_VERSION}:latest
-    restart: always
-    ports:
-      - '8765:80'
-    depends_on:
-      - server
-
 
 volumes:
   prod_db_data:
