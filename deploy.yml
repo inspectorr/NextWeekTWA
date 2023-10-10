@@ -50,7 +50,7 @@ services:
       - redis
 
   nginx:
-    image: ${NAMESPACE}/nw_client-${BUILD_VERSION}:latest
+    image: ${NAMESPACE}/nw_nginx-${BUILD_VERSION}:latest
     restart: always
     ports:
       - '8765:80'
