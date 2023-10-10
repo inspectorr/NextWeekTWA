@@ -93,7 +93,7 @@ export function WeekPage() {
 
     useEffect(() => {
         TWA.expand();
-        scrollToDefaultDayStart();
+        setTimeout(scrollToDefaultDayStart, 100);
     }, []);
 
     function scrollToDefaultDayStart() {

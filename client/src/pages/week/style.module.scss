@@ -1,9 +1,16 @@
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
 .table {
   width: 100%;
 
   .tableBody {
     height: calc(100vh - 4rem);
     overflow: scroll;
+    animation: fadeIn 600ms;
+    animation-timing-function: ease-in-out;
   }
 }
 
@@ -33,11 +40,6 @@
   border: none !important;
 }
 
-@keyframes fadeIn {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
-}
-
 .cellEvent {
   width: 100%;
   position: absolute;
@@ -49,7 +51,7 @@
   box-sizing: border-box;
   background-color: #5ac8fb;
   opacity: 1;
-  animation: fadeIn 300ms;
+  animation: fadeIn 600ms;
   animation-timing-function: ease-in-out;
   border-radius: 0.3rem;
 }
