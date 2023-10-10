@@ -19,10 +19,6 @@ export function WeekPage() {
 
     const navigate = useNavigate();
 
-    useLayoutEffect(() => {
-        TWA.expand();
-    }, []);
-
     const [selectedDatetime, setSelectedDatetime, selectedDatetimeRef] = useStateWithRef();
 
     const [selectedIsoDate, selectedHour] = selectedDatetime ? [
@@ -96,12 +92,18 @@ export function WeekPage() {
     const tableBodyRef = useRef();
 
     useEffect(() => {
+        TWA.expand();
+        scrollToDefaultDayStart();
+    }, []);
+
+    function scrollToDefaultDayStart() {
+        const SCROLL_TO_HOUR = 9;
         const el = tableBodyRef.current;
         if (!el) return;
         const firstRow = el.querySelector(`.${styles.row}`);
         if (!firstRow) return;
-        el.scrollTo({ top: firstRow.offsetHeight * 9, behavior: 'smooth' })
-    }, []);
+        el.scrollTo({ top: firstRow.offsetHeight * SCROLL_TO_HOUR, behavior: 'smooth' })
+    }
 
     if (!date) {
         return null;
