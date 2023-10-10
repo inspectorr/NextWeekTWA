@@ -26,20 +26,16 @@ export function WeekPage() {
 
     const [selectedDatetime, setSelectedDatetime, selectedDatetimeRef] = useStateWithRef();
 
-    const [selectedIsoDate, selectedHour] = useMemo(() => {
-        if (!selectedDatetime) {
-            return [];
-        }
-        return [format(new Date(selectedDatetime), 'yyyy-MM-dd'), getHours(new Date(selectedDatetime))];
-    }, [selectedDatetime]);
-
+    const [selectedIsoDate, selectedHour] = selectedDatetime ? [
+        format(new Date(selectedDatetime), 'yyyy-MM-dd'), getHours(new Date(selectedDatetime))
+    ] : [];
 
     function onHourClick(date, time) {
         setSelectedDatetime(combineDateTime(date, time));
     }
 
-    const weekStart =  startOfWeek(new Date(date), { weekStartsOn: 1 });
-    const weekEnd =  startOfWeek(new Date(date), { weekStartsOn: 1 });
+    const weekStart = startOfWeek(new Date(date), { weekStartsOn: 1 });
+    const weekEnd = endOfWeek(new Date(date), { weekStartsOn: 1 });
 
     const [events, isLoading] = useRemoteEvents(weekStart.toISOString(), weekEnd.toISOString());
 

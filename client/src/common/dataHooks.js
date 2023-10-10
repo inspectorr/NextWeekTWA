@@ -21,13 +21,10 @@ export function useRemoteEvents(startDateIsoString, endDateIsoString) {
         });
     }, [startDateIsoString, endDateIsoString]);
 
-    return [formatEvents(result?.data ?? {}), isLoading]
+    return [formatEvents(result?.data ?? []), isLoading]
 }
 
 function formatEvents(data) {
-    if (!data) {
-        return {};
-    }
     const events = {};
     for (const event of data) {
         const date = new Date(event.start_date);
