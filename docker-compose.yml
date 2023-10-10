@@ -27,6 +27,8 @@ services:
     build:
       context: client
       target: dev
+    ports:
+      - '3000:3000'
     volumes:
       - ./client/src:/app/src
       - ./client/package.json:/app/package.json
@@ -36,6 +38,8 @@ services:
     <<: *python
     container_name: nw_server
     command: runserver
+    ports:
+      - '8000:8000'
     volumes:
       - ./server:/app
     depends_on:
