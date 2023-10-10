@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { format, startOfWeek, endOfWeek, addDays, getDate, getHours, getMinutes, addHours } from 'date-fns';
 import { useNavigate, useParams } from 'react-router-dom';
 import cn from 'classnames';
@@ -9,7 +9,7 @@ import { appUrls } from 'urls';
 import { TWA } from 'common/telegram/api';
 import { useRemoteEvents } from 'common/dataHooks';
 import { ShareIconSVG } from 'common/ShareIcon';
-import { useStateWithRef } from 'helpers/hooks';
+import { useClassNameAnimation, useStateWithRef, useTimerBool } from 'helpers/hooks';
 import styles from 'pages/week/style.module.scss';
 
 
@@ -25,7 +25,7 @@ export function WeekPage() {
         format(new Date(selectedDatetime), 'yyyy-MM-dd'), getHours(new Date(selectedDatetime))
     ] : [];
 
-    function onHourClick(date, time) {
+    function handleHourSelection(date, time) {
         setSelectedDatetime(combineDateTime(date, time));
     }
 
@@ -55,11 +55,20 @@ export function WeekPage() {
                 { weekDates?.map((date) => {
                     const formattedDate = format(date, 'yyyy-MM-dd');
                     const hourEvents = events[formattedDate]?.[hour] ?? [];
+
+                    function handleCellClick() {
+                        if (hourEvents.length > 0) {
+                            tableBodyShakingAnimation();
+                            return;
+                        }
+                        handleHourSelection(formattedDate, formattedTime);
+                    }
+
                     return (
                         <div
                             key={ formattedDate + formattedTime }
                             className={ styles.cell }
-                            onMouseDown={ () => onHourClick(formattedDate, formattedTime) }
+                            onClick={ handleCellClick }
                         >
                             { hourEvents.map(event => {
                                 return (
@@ -90,13 +99,20 @@ export function WeekPage() {
     }
 
     const tableBodyRef = useRef();
+    const [fadedIn, setFadeInTimer] = useTimerBool(600);
+    const tableBodyShakingAnimation = useClassNameAnimation(tableBodyRef.current, styles.tableBodyShaking, 300);
 
     useEffect(() => {
         TWA.expand();
-        setTimeout(scrollToDefaultDayStart, 100);
+        onTableBodyMount();
     }, []);
 
-    function scrollToDefaultDayStart() {
+    function onTableBodyMount() {
+        scrollToDayStart();
+        setFadeInTimer();
+    }
+
+    function scrollToDayStart() {
         const SCROLL_TO_HOUR = 9;
         const el = tableBodyRef.current;
         if (!el) return;
@@ -130,7 +146,7 @@ export function WeekPage() {
                     { week }
                 </div>
                 <div
-                    className={ cn(styles.tableBody) }
+                    className={ cn(styles.tableBody, !fadedIn && styles.tableBodyFadeIn) }
                     ref={ tableBodyRef }
                 >
                     { hours }
@@ -153,15 +169,28 @@ function HourEvent({
     const hourDiff = endHour - hour;
     const top = Math.floor(startMinute / 60 * 100);
     const height = hourDiff * 100 + Math.floor(+ endMinute / 60 * 100) - top;
+
+    const ref = useRef();
+    const [fadedIn, setFadeInTimer] = useTimerBool(300);
+    const busyAnimation = useClassNameAnimation(ref.current, styles.cellEventBusy, 500);
+    useEffect(() => {
+        setFadeInTimer();
+    }, []);
+
+    function handleClick() {
+        busyAnimation();
+    }
+
     return (
         <div
-            className={ cn(styles.cellEvent, isSelected && styles.cellEventSelected) }
+            className={ cn(styles.cellEvent, isSelected && styles.cellEventSelected, !fadedIn && styles.cellEventFadeIn) }
             style={ {
                 top: `${top}%`,
                 height: `${height}%`
             } }
-        >
-        </div>
+            ref={ ref }
+            onClick={ handleClick }
+        />
     );
 }
 

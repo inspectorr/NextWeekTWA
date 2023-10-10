@@ -1,9 +1,10 @@
 import { useCallback, useEffect } from 'react';
-import { FormProvider, useFormContext, useForm, Form } from 'react-hook-form';
+import { FormProvider, useForm, Form } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
 import { addHours, format } from 'date-fns';
 
 import Page from 'common/Page';
+import { FormInput } from 'common/FormInput';
 import { TWA } from 'common/telegram/api';
 import { useRequest } from 'helpers/hooks';
 import { combineDateTime } from 'helpers/date';
@@ -61,16 +62,16 @@ export function EventPage() {
             } }
         >
             <div className={ styles.event }>
-                <div className={ styles.header }>
+                <div className={ styles.eventHeader }>
                     🗓 NEW EVENT { new Date(date).toLocaleDateString() }
                 </div>
                 <div>
                     { defaultStartTime } - { defaultEndTime }
                 </div>
             </div>
-            <div className={ styles.field }>
-                <FormProvider { ...formApi }>
-                    <Form>
+            <FormProvider { ...formApi }>
+                <Form>
+                    <div className={ styles.formContainer }>
                         <FormInput
                             name="title"
                             inputProps={ {
@@ -78,25 +79,9 @@ export function EventPage() {
                                 autoFocus: true
                             } }
                         />
-                    </Form>
-                </FormProvider>
-            </div>
+                    </div>
+                </Form>
+            </FormProvider>
         </Page>
-    );
-}
-
-export function FormInput({
-    name,
-    required = false,
-    inputProps = {}
-}) {
-    const { register } = useFormContext();
-    return (
-        <div className={ styles.formInput }>
-            <input
-                { ...register(name, { required }) }
-                { ...inputProps }
-            />
-        </div>
     );
 }

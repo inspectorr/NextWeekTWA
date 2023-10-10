@@ -3,13 +3,34 @@
   100% { opacity: 1; }
 }
 
+@keyframes scaleUp {
+  0% { transform: scale(0.7); }
+  100% { transform: scale(1); }
+}
+
+@keyframes horizontalShaking {
+ 0% { transform: translateX(0) }
+ 25% { transform: translateX(0.15rem) }
+ 50% { transform: translateX(-0.15rem) }
+ 75% { transform: translateX(0.15rem) }
+ 100% { transform: translateX(0) }
+}
+
 .table {
   width: 100%;
 
   .tableBody {
     height: calc(100vh - 4rem);
     overflow: scroll;
+  }
+
+  .tableBodyFadeIn {
     animation: fadeIn 600ms;
+    animation-timing-function: ease-in-out;
+  }
+
+  .tableBodyShaking {
+    animation: horizontalShaking 300ms;
     animation-timing-function: ease-in-out;
   }
 }
@@ -28,18 +49,6 @@
   position: relative;
 }
 
-.cell + .cell {
-}
-
-.cellHeader {
-  border: none !important;
-  background-color: unset !important;
-}
-
-.cellStarter {
-  border: none !important;
-}
-
 .cellEvent {
   width: 100%;
   position: absolute;
@@ -49,15 +58,27 @@
   border-right: 0.5px solid var(--tg-theme-secondary-bg-color);
   border-left: 0.5px solid var(--tg-theme-secondary-bg-color);
   box-sizing: border-box;
-  background-color: #5ac8fb;
+  //background-color: #5ac8fb;
   opacity: 1;
-  animation: fadeIn 600ms;
-  animation-timing-function: ease-in-out;
   border-radius: 0.3rem;
+  animation-timing-function: ease-in-out;
+  background: #63c4f8;
+  background: linear-gradient(180deg, #63c4f8 0%, #2d9ae7 100%);
+  //#8ed1e5
+  //#2d9ae7
+}
+
+.cellEventFadeIn {
+  animation: fadeIn 300ms;
+}
+
+.cellEventBusy {
+  animation: scaleUp 400ms;
 }
 
 .cellEventSelected {
-  background-color: #33CC00;
+  background: #9bdd7c;
+  background: linear-gradient(180deg, #9bdd7c 0%, #33CC00 100%);
 }
 
 .row {
