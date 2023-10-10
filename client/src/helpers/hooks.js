@@ -50,3 +50,29 @@ export function useStateWithRef(defaultState) {
     }, [state]);
     return [state, setState, ref];
 }
+
+export function useClassNameAnimation(element, className, time) {
+    const timerRef = useRef(-1);
+
+    function animate() {
+        if (!element) return;
+        element.classList.add(className);
+        timerRef.current = setTimeout(() => {
+            element.classList.remove(className);
+        }, time);
+    }
+
+    return animate;
+}
+
+export function useTimerBool(time) {
+    const [bool, setBool] = useState(false);
+
+    function setTimer() {
+        setTimeout(() => {
+            setBool(true);
+        }, time);
+    }
+
+    return [bool, setTimer];
+}

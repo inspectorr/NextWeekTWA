@@ -1,12 +1,11 @@
 import { useCallback, useEffect } from 'react';
-import { FormProvider, useFormContext, useForm, Form } from 'react-hook-form';
+import { FormProvider, useForm, Form } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
 import { addHours, format } from 'date-fns';
 
 import Page from 'common/Page';
-import { TWA } from 'telegram/api';
-import { TWAMainButtonController } from 'telegram/MainButton';
-import { TWABackButton } from 'telegram/BackButton';
+import { FormInput } from 'common/FormInput';
+import { TWA } from 'common/telegram/api';
 import { useRequest } from 'helpers/hooks';
 import { combineDateTime } from 'helpers/date';
 import { appUrls, apiUrls } from 'urls';
@@ -19,6 +18,7 @@ export function EventPage() {
 
     const {
         request: createEvent,
+        isLoading,
         isOk
     } = useRequest({
         method: 'POST',
@@ -48,18 +48,30 @@ export function EventPage() {
     }, [isOk]);
 
     return (
-        <Page twaHeaderSecondary>
+        <Page
+            twaHeaderSecondary
+            mainButtonProps={ {
+                visible: true,
+                text: 'CONFIRM',
+                onClick: formApi?.handleSubmit(onSubmit),
+                loading: isLoading
+            } }
+            backButtonProps={ {
+                visible: true,
+                to: appUrls.week(secretKey, date)
+            } }
+        >
             <div className={ styles.event }>
-                <div className={ styles.header }>
+                <div className={ styles.eventHeader }>
                     🗓 NEW EVENT { new Date(date).toLocaleDateString() }
                 </div>
                 <div>
                     { defaultStartTime } - { defaultEndTime }
                 </div>
             </div>
-            <div className={ styles.field }>
-                <FormProvider { ...formApi }>
-                    <Form>
+            <FormProvider { ...formApi }>
+                <Form>
+                    <div className={ styles.formContainer }>
                         <FormInput
                             name="title"
                             inputProps={ {
@@ -67,32 +79,9 @@ export function EventPage() {
                                 autoFocus: true
                             } }
                         />
-                    </Form>
-                </FormProvider>
-            </div>
-            <TWAMainButtonController
-                text="CONFIRM"
-                onClick={ formApi?.handleSubmit(onSubmit) }
-            />
-            <TWABackButton
-                to={ appUrls.week(secretKey, date) }
-            />
+                    </div>
+                </Form>
+            </FormProvider>
         </Page>
-    );
-}
-
-export function FormInput({
-    name,
-    required = false,
-    inputProps = {}
-}) {
-    const { register } = useFormContext();
-    return (
-        <div className={ styles.formInput }>
-            <input
-                { ...register(name, { required }) }
-                { ...inputProps }
-            />
-        </div>
     );
 }

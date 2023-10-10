@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { format, startOfWeek, endOfWeek, addDays, getDate, getHours, getMinutes, addHours } from 'date-fns';
 import { useNavigate, useParams } from 'react-router-dom';
 import cn from 'classnames';
@@ -6,13 +6,11 @@ import cn from 'classnames';
 import Page from 'common/Page';
 import { combineDateTime, leadingNullStr } from 'helpers/date';
 import { appUrls } from 'urls';
-import { TWA } from 'telegram/api';
-import { TWABackButton } from 'telegram/BackButton';
+import { TWA } from 'common/telegram/api';
 import { useRemoteEvents } from 'common/dataHooks';
 import { ShareIconSVG } from 'common/ShareIcon';
-import { useStateWithRef } from 'helpers/hooks';
+import { useClassNameAnimation, useStateWithRef, useTimerBool } from 'helpers/hooks';
 import styles from 'pages/week/style.module.scss';
-import { TWAMainButtonController } from 'telegram/MainButton';
 
 
 export function WeekPage() {
@@ -21,28 +19,20 @@ export function WeekPage() {
 
     const navigate = useNavigate();
 
-    useEffect(() => {
-        TWA.expand();
-    }, []);
-
     const [selectedDatetime, setSelectedDatetime, selectedDatetimeRef] = useStateWithRef();
 
-    const [selectedIsoDate, selectedHour] = useMemo(() => {
-        if (!selectedDatetime) {
-            return [];
-        }
-        return [format(new Date(selectedDatetime), 'yyyy-MM-dd'), getHours(new Date(selectedDatetime))];
-    }, [selectedDatetime]);
+    const [selectedIsoDate, selectedHour] = selectedDatetime ? [
+        format(new Date(selectedDatetime), 'yyyy-MM-dd'), getHours(new Date(selectedDatetime))
+    ] : [];
 
-
-    function onHourClick(date, time) {
+    function handleHourSelection(date, time) {
         setSelectedDatetime(combineDateTime(date, time));
     }
 
-    const weekStart = useMemo(() => startOfWeek(new Date(date), { weekStartsOn: 1 }), [date]);
-    const weekEnd = useMemo(() => endOfWeek(new Date(date), { weekStartsOn: 1 }), [date]);
+    const weekStart = startOfWeek(new Date(date), { weekStartsOn: 1 });
+    const weekEnd = endOfWeek(new Date(date), { weekStartsOn: 1 });
 
-    const events = useRemoteEvents(weekStart, weekEnd);
+    const [events, isLoading] = useRemoteEvents(weekStart.toISOString(), weekEnd.toISOString());
 
     const weekDates = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
     const week = weekDates?.map((weekDate) => {
@@ -65,11 +55,20 @@ export function WeekPage() {
                 { weekDates?.map((date) => {
                     const formattedDate = format(date, 'yyyy-MM-dd');
                     const hourEvents = events[formattedDate]?.[hour] ?? [];
+
+                    function handleCellClick() {
+                        if (hourEvents.length > 0) {
+                            tableBodyShakingAnimation();
+                            return;
+                        }
+                        handleHourSelection(formattedDate, formattedTime);
+                    }
+
                     return (
                         <div
                             key={ formattedDate + formattedTime }
                             className={ styles.cell }
-                            onMouseDown={ () => onHourClick(formattedDate, formattedTime) }
+                            onClick={ handleCellClick }
                         >
                             { hourEvents.map(event => {
                                 return (
@@ -100,21 +99,42 @@ export function WeekPage() {
     }
 
     const tableBodyRef = useRef();
+    const [fadedIn, setFadeInTimer] = useTimerBool(600);
+    const tableBodyShakingAnimation = useClassNameAnimation(tableBodyRef.current, styles.tableBodyShaking, 300);
 
     useEffect(() => {
+        TWA.expand();
+        onTableBodyMount();
+    }, []);
+
+    function onTableBodyMount() {
+        scrollToDayStart();
+        setFadeInTimer();
+    }
+
+    function scrollToDayStart() {
+        const SCROLL_TO_HOUR = 9;
         const el = tableBodyRef.current;
         if (!el) return;
         const firstRow = el.querySelector(`.${styles.row}`);
         if (!firstRow) return;
-        el.scrollTo({ top: firstRow.offsetHeight * 9, behavior: 'smooth' })
-    }, []);
+        el.scrollTo({ top: firstRow.offsetHeight * SCROLL_TO_HOUR, behavior: 'smooth' });
+    }
 
     if (!date) {
         return null;
     }
 
     return (
-        <Page>
+        <Page
+            mainButtonProps={ {
+                visible: true,
+                text: !selectedDatetime ? 'SELECT TIME' : 'CONTINUE',
+                disabled: !selectedDatetime,
+                loading: isLoading,
+                onClick: toEventBooking,
+            } }
+        >
             <div className={ styles.table }>
                 <div className={ cn(styles.row, styles.rowHeader) }>
                     <div className={ cn(styles.cell, styles.cellHeader) }>
@@ -126,17 +146,12 @@ export function WeekPage() {
                     { week }
                 </div>
                 <div
-                    className={ cn(styles.tableBody) }
+                    className={ cn(styles.tableBody, !fadedIn && styles.tableBodyFadeIn) }
                     ref={ tableBodyRef }
                 >
                     { hours }
                 </div>
             </div>
-            <TWAMainButtonController
-                text={ !selectedDatetime ? 'SELECT TIME' : 'CONTINUE'  }
-                disabled={ !selectedDatetime }
-                onClick={ toEventBooking }
-            />
         </Page>
     );
 }
@@ -154,15 +169,28 @@ function HourEvent({
     const hourDiff = endHour - hour;
     const top = Math.floor(startMinute / 60 * 100);
     const height = hourDiff * 100 + Math.floor(+ endMinute / 60 * 100) - top;
+
+    const ref = useRef();
+    const [fadedIn, setFadeInTimer] = useTimerBool(300);
+    const busyAnimation = useClassNameAnimation(ref.current, styles.cellEventBusy, 500);
+    useEffect(() => {
+        setFadeInTimer();
+    }, []);
+
+    function handleClick() {
+        busyAnimation();
+    }
+
     return (
         <div
-            className={ cn(styles.cellEvent, isSelected && styles.cellEventSelected) }
+            className={ cn(styles.cellEvent, isSelected && styles.cellEventSelected, !fadedIn && styles.cellEventFadeIn) }
             style={ {
                 top: `${top}%`,
                 height: `${height}%`
             } }
-        >
-        </div>
+            ref={ ref }
+            onClick={ handleClick }
+        />
     );
 }
 

@@ -22,10 +22,16 @@ services:
 
   client:
     image: ${NAMESPACE}/nw_client-${BUILD_VERSION}:latest
+    restart: always
+    ports:
+      - '3000:3000'
 
   server:
     <<: *python
     command: runserver
+    restart: always
+    ports:
+      - '8000:8000'
     depends_on:
       - redis
       - database
@@ -51,6 +57,7 @@ services:
     ports:
       - '8765:80'
     depends_on:
+      - client
       - server
 
 

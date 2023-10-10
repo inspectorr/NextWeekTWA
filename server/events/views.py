@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.generics import CreateAPIView, ListAPIView
 from rest_framework.response import Response
@@ -11,16 +12,7 @@ from events.notifications import EventCreateNotifier
 from events.serializers import EventCreateSerializer, EventDetailSerializer
 
 
-class TelegramOwnerContextMixin:
-    def get_serializer_context(self, *args, **kwargs):
-        context = super().get_serializer_context(*args, **kwargs)
-        context.update({
-            'tg_owner': TelegramUser.objects.get(secret_key=self.kwargs['tg_owner_secret_key'])
-        })
-        return context
-
-
-class EventCreateView(TelegramOwnerContextMixin, TelegramAuthViewMixin, CreateAPIView):
+class EventCreateView(TelegramAuthViewMixin, CreateAPIView):
     serializer_class = EventCreateSerializer
     queryset = Event.objects.all()
 
@@ -31,8 +23,14 @@ class EventCreateView(TelegramOwnerContextMixin, TelegramAuthViewMixin, CreateAP
         EventCreateNotifier.delay(event)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    def get_serializer_context(self, *args, **kwargs):
+        context = super().get_serializer_context(*args, **kwargs)
+        tg_owner = get_object_or_404(TelegramUser, secret_key=self.kwargs['tg_owner_secret_key'])
+        context.update({'tg_owner': tg_owner})
+        return context
 
-class EventListView(TelegramOwnerContextMixin, TelegramAuthViewMixin, ListAPIView):
+
+class EventListView(TelegramAuthViewMixin, ListAPIView):
     serializer_class = EventDetailSerializer
 
     def get_queryset(self):
