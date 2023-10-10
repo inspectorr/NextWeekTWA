@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.generics import CreateAPIView, ListAPIView
 from rest_framework.response import Response
@@ -24,9 +25,8 @@ class EventCreateView(TelegramAuthViewMixin, CreateAPIView):
 
     def get_serializer_context(self, *args, **kwargs):
         context = super().get_serializer_context(*args, **kwargs)
-        context.update({
-            'tg_owner': TelegramUser.objects.filter(secret_key=self.kwargs['tg_owner_secret_key']).first()
-        })
+        tg_owner = get_object_or_404(TelegramUser, secret_key=self.kwargs['tg_owner_secret_key'])
+        context.update({'tg_owner': tg_owner})
         return context
 
 
