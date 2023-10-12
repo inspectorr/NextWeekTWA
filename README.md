@@ -105,7 +105,7 @@ There are many solutions for this (https://github.com/anderspitman/awesome-tunne
 but here we use https://serveo.net/ - it's easy to set up, stable and free.
 
 ```
-ssh -R <your-unique-subdomain>.serveo.net:80:localhost:8765
+ssh -R <your-unique-subdomain>.serveo.net:80:localhost:8765 serveo.net
 ```
 It's better to have unique subdomain name: as we saw in **Configuration** section,
 you also need to set it in the `.env` file. 
