@@ -1,23 +1,19 @@
 import { useLayoutEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
+import { useTWAEvent } from 'helpers/hooks';
 import { TWA } from './api';
 
 export function TWAMainButtonController(props) {
     const {
         text,
-        onClick,
         loading,
         disabled,
+        onClick = () => {},
         visible = false
     } = props;
 
-    useLayoutEffect(() => {
-        if (!onClick) return;
-        TWA.MainButton.onClick(onClick);
-        return () => {
-            TWA.MainButton.offClick(onClick);
-        };
-    }, [onClick]);
+    useTWAEvent('mainButtonClicked', onClick);
+    useTWAEvent('themeChanged', setButtonParams);
 
     const propsRef = useRef({});
     useLayoutEffect(() => {
@@ -36,12 +32,6 @@ export function TWAMainButtonController(props) {
             is_visible: visible
         });
     }
-
-    useLayoutEffect(() => {
-        TWA.onEvent('themeChanged', () => {
-             setButtonParams();
-        });
-    }, []);
 
     useLayoutEffect(() => {
         if (loading) {

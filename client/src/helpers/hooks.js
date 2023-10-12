@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { TWA } from 'common/telegram/api';
 import { axiosRequest } from './request';
 
 export function useRequest(axiosReqObj) {
@@ -75,4 +76,13 @@ export function useTimerBool(time) {
     }
 
     return [bool, setTimer];
+}
+
+export function useTWAEvent(eventName, handler) {
+    useLayoutEffect(() => {
+        TWA.onEvent(eventName, handler);
+        return () => {
+            TWA.offEvent(eventName, handler);
+        };
+    }, []);
 }
