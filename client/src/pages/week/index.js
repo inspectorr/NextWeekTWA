@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
 import { format, startOfWeek, endOfWeek, addDays, getDate, getHours, getMinutes, addHours } from 'date-fns';
 import { useNavigate, useParams } from 'react-router-dom';
 import cn from 'classnames';
@@ -9,7 +9,7 @@ import { appUrls } from 'urls';
 import { TWA } from 'common/telegram/api';
 import { useRemoteEvents } from 'common/dataHooks';
 import { ShareIconSVG } from 'common/ShareIcon';
-import { useClassNameAnimation, useStateWithRef, useTimerBool } from 'helpers/hooks';
+import { useClassNameAnimation, useStateWithRef, useTimerBool, useTWAEvent } from 'helpers/hooks';
 import styles from 'pages/week/style.module.scss';
 
 
@@ -102,15 +102,12 @@ export function WeekPage() {
     const [fadedIn, setFadeInTimer] = useTimerBool(600);
     const tableBodyShakingAnimation = useClassNameAnimation(tableBodyRef.current, styles.tableBodyShaking, 300);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         TWA.expand();
-        onTableBodyMount();
+        setFadeInTimer();
     }, []);
 
-    function onTableBodyMount() {
-        scrollToDayStart();
-        setFadeInTimer();
-    }
+    useTWAEvent('viewportChanged', scrollToDayStart);
 
     function scrollToDayStart() {
         const SCROLL_TO_HOUR = 9;

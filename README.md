@@ -3,8 +3,8 @@
 Telegram Mini App that implements event booking flow on a week 
 and provides ability to share your week with a friend/customer, so he can book an hour.
 
-![image info](.github/1.jpg)
-![image info](.github/2.jpg)
+![image info](.github/1.png)
+![image info](.github/2.png)
 
 ### Prerequisites
 * [Docker](https://www.docker.com/) installed on your OS,
@@ -60,6 +60,10 @@ it will help you sync current app state with buttons.
 
 As an administrator, you can use Django's `/admin` to control any app content, 
 if your model is registered in `admin.py`.
+
+#### Easy development!
+Dev set up is really helpful and includes instant update on code changes (hot reloading) on server and client both 
+and also a web console provided by [eruda](https://github.com/liriliri/eruda).
 
 ### Configuration
 To setup environment variables, classic `.env` file is used. Let's see:

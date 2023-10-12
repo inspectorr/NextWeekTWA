@@ -1,66 +1,46 @@
 import { useLayoutEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
+import { useTWAEvent } from 'helpers/hooks';
 import { TWA } from './api';
 
-export function TWAMainButtonController({
-    text,
-    onClick,
-    loading,
-    disabled,
-    visible = false
-}) {
-    useLayoutEffect(() => {
-        TWA.MainButton.isVisible = visible;
-    }, [visible]);
+export function TWAMainButtonController(props) {
+    const {
+        text,
+        loading,
+        disabled,
+        onClick = () => {},
+        visible = false
+    } = props;
 
+    useTWAEvent('mainButtonClicked', onClick);
+    useTWAEvent('themeChanged', setButtonParams);
+
+    const propsRef = useRef({});
     useLayoutEffect(() => {
-        if (!onClick) return;
-        TWA.MainButton.onClick(onClick);
-        return () => {
-            TWA.MainButton.offClick(onClick);
-        };
-    }, [onClick]);
+        propsRef.current = props;
+    });
+
+    function setButtonParams() {
+        const { visible = false, disabled, loading, text } = propsRef.current;
+        const color = disabled || loading ? TWA.themeParams.secondary_bg_color : '#33CC00';
+        const textColor = disabled || loading ? TWA.themeParams.hint_color : TWA.themeParams.button_text_color;
+        TWA.MainButton.setParams({
+            text,
+            color,
+            text_color: textColor,
+            is_active: !disabled && !loading,
+            is_visible: visible
+        });
+    }
 
     useLayoutEffect(() => {
         if (loading) {
             TWA.MainButton.showProgress();
-            TWA.MainButton.disable();
         } else {
             TWA.MainButton.hideProgress();
-            TWA.MainButton.enable();
         }
-    }, [loading]);
-
-    useLayoutEffect(() => {
-        TWA.MainButton.text = text;
-    }, [text]);
-
-    const disabledRef = useRef();
-    useLayoutEffect(() => {
-        disabledRef.current = disabled;
-    }, [disabled]);
-
-    function setColorSettings() {
-        if (disabledRef.current) {
-            TWA.MainButton.disable();
-            TWA.MainButton.textColor = TWA.themeParams.hint_color;
-            TWA.MainButton.color = TWA.themeParams.secondary_bg_color;
-        } else {
-            TWA.MainButton.enable();
-            TWA.MainButton.textColor = TWA.themeParams.button_text_color;
-            TWA.MainButton.color = '#33CC00';
-        }
-    }
-
-    useLayoutEffect(() => {
-        setColorSettings();
-    }, [disabled]);
-
-    useLayoutEffect(() => {
-        TWA.onEvent('themeChanged', () => {
-             setColorSettings();
-        });
-    }, []);
+        setButtonParams();
+    }, [visible, disabled, loading, text]);
 
     return null;
 }

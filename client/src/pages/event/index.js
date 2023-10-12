@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useLayoutEffect } from 'react';
 import { FormProvider, useForm, Form } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
 import { addHours, format } from 'date-fns';
@@ -41,7 +41,7 @@ export function EventPage() {
         });
     }, []);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (isOk) {
             TWA.close();
         }
