@@ -39,7 +39,10 @@ export function WeekPage() {
         const weekDayName = format(weekDate, 'EEEEE');
         const dateOfMonth = getDate(weekDate);
         return (
-            <div key={ weekDayName } className={ cn(styles.cell, styles.cellHeader) }>
+            <div
+                key={ dateOfMonth }
+                className={ cn(styles.cell, styles.cellHeader) }
+            >
                 <div>{ weekDayName }</div>
                 <div>{ dateOfMonth }</div>
             </div>
@@ -50,8 +53,10 @@ export function WeekPage() {
         const time = leadingNullStr(hour);
         const formattedTime = `${time}:00`;
         return (
-            <div className={ styles.row }>
-                <div className={ cn(styles.cell, styles.cellStarter) }>{ formattedTime }</div>
+            <div key={ formattedTime } className={ styles.row }>
+                <div className={ styles.cell }>
+                    { formattedTime }
+                </div>
                 { weekDates?.map((date) => {
                     const formattedDate = format(date, 'yyyy-MM-dd');
                     const hourEvents = events[formattedDate]?.[hour] ?? [];
@@ -73,6 +78,7 @@ export function WeekPage() {
                             { hourEvents.map(event => {
                                 return (
                                     <HourEvent
+                                        key={ event.id }
                                         hour={ hour }
                                         startDate={ new Date(event.start_date) }
                                         endDate={ new Date(event.end_date) }
@@ -104,7 +110,11 @@ export function WeekPage() {
 
     useLayoutEffect(() => {
         TWA.expand();
+    }, []);
+
+    useEffect(() => {
         setFadeInTimer();
+        scrollToDayStart();
     }, []);
 
     useTWAEvent('viewportChanged', scrollToDayStart);
