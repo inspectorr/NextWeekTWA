@@ -104,7 +104,11 @@ export function WeekPage() {
 
     useLayoutEffect(() => {
         TWA.expand();
+    }, []);
+
+    useEffect(() => {
         setFadeInTimer();
+        scrollToDayStart();
     }, []);
 
     useTWAEvent('viewportChanged', scrollToDayStart);
