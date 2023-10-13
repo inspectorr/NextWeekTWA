@@ -62,8 +62,10 @@ As an administrator, you can use Django's `/admin` to control any app content,
 if your model is registered in `admin.py`.
 
 #### Easy development!
-Dev set up is really helpful and includes instant update on code changes (hot reloading) on server and client both 
-and also a web console provided by [eruda](https://github.com/liriliri/eruda).
+Dev set up is really helpful and includes: 
+- instant update on code changes (hot reloading) on server and client both 
+- web console emulator with [eruda](https://github.com/liriliri/eruda)
+- types for Telegram Web App API provided by [twa-dev/types](https://github.com/twa-dev/types)
 
 ### Configuration
 To setup environment variables, classic `.env` file is used. Let's see:
