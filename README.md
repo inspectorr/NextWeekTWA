@@ -1,5 +1,7 @@
 # NextWeekTWA
 
+*🏆 3rd place on [Telegram Mini App Contest](https://contest.com/user/Humble-Spider)*
+
 Telegram Mini App that implements event booking flow on a week 
 and provides ability to share your week with a friend/customer, so he can book an hour.
 
